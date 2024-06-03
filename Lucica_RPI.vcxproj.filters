@@ -18,14 +18,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Lucica_RPI.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <None Include="Lucica_RPI-Debug.vgdbsettings">
       <Filter>VisualGDB settings</Filter>
     </None>
     <None Include="Lucica_RPI-Release.vgdbsettings">
       <Filter>VisualGDB settings</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SOURCE\Lucica_RPI.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\EVE_API.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\EVE_HAL.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="INCLUDE\EVE.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\EVE_config.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\FT8xx.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\HAL.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\MCU.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

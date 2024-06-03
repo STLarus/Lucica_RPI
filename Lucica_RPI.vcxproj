@@ -45,13 +45,22 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SOURCE\EVE_API.c" />
+    <ClCompile Include="SOURCE\EVE_HAL.c" />
+    <ClCompile Include="SOURCE\Lucica_RPI.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="Lucica_RPI.c" />
     <None Include="Lucica_RPI-Debug.vgdbsettings" />
     <None Include="Lucica_RPI-Release.vgdbsettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="INCLUDE\EVE.h" />
+    <ClInclude Include="INCLUDE\EVE_config.h" />
+    <ClInclude Include="INCLUDE\FT8xx.h" />
+    <ClInclude Include="INCLUDE\HAL.h" />
+    <ClInclude Include="INCLUDE\MCU.h" />
   </ItemGroup>
 </Project>
