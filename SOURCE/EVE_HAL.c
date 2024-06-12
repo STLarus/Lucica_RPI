@@ -26,6 +26,7 @@
 #include "../INCLUDE/EVE.h"
 #include "../INCLUDE/HAL.h"
 #include "../INCLUDE/MCU.h"
+#include "../INCLUDE/FT8xx.h"
 
 
 #define SPI_CHANNEL 1  // SPI kanal koji koristite (0 ili 1)

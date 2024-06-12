@@ -52,6 +52,7 @@
 #include <stdarg.h>
 #include "../include/EVE.h"
 #include "../include/HAL.h"
+#include "../include/EVE_config.h"
 
 // Set beginning of graphics command memory
 //static uint32_t RAMCommandBuffer = EVE_RAM_CMD;

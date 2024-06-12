@@ -66,6 +66,8 @@
 #define BT817 817
 #define BT818 818
 
+#define FT8XX_TYPE	FT813
+
 /* For capacitive versions */
 #define CTOUCH_MODE_COMPATIBILITY 1
 #define CTOUCH_MODE_EXTENDED 0
@@ -74,6 +76,7 @@
 #undef EVE2_ENABLE
 #undef EVE3_ENABLE
 #undef EVE4_ENABLE
+
 
 #if (FT8XX_TYPE == FT800)
 #define EVE1_ENABLE
