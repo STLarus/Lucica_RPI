@@ -152,6 +152,10 @@ void HAL_PowerDown(int8_t enable)
 
 
 // ################# COMBINED ADDRESSING AND DATA FUNCTIONS ####################
+void HAL_ChipSelect(int8_t state)
+{
+
+}
 
 /*
 Imam mogućnost ds s eupravlja sa CS linijom  a tada se koriste
@@ -163,6 +167,47 @@ Imam mogućnost ds s eupravlja sa CS linijom  a tada se koriste
 
 	Treba i podesiti RPI da koristi SPI1
 */
+// -------------- Write a 32-bit value  --------------------
+void HAL_Write32(uint32_t val32)
+{
+	uint8_t data[4];
+
+	data[0] = (uint8_t)(val32 >> 24);
+	data[1] = (uint8_t)(val32 >> 16);
+	data[2] = (uint8_t)(val32 >> 8);
+	data[3] = (uint8_t)(val32);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 4);
+	//CS_High();
+}
+// -------------- Write a 16-bit value  --------------------
+void HAL_Write16(uint16_t val16)
+{
+	
+	uint8_t data[2];
+
+
+	data[0] = (uint8_t)(val16 >> 8);
+	data[1] = (uint8_t)(val16);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 2);
+	//CS_High();
+}
+
+// -------------- Write an 8-bit value  --------------------
+void HAL_Write8(uint8_t val8)
+{
+	uint8_t data[1];
+
+
+	data[0] = (uint8_t)(val8);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 1);
+	//CS_High();
+}
 
 // -------------- Write a 32-bit value to specified address --------------------
 void HAL_MemWrite32(uint32_t address, uint32_t val32)
