@@ -50,6 +50,7 @@
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 #include <stdarg.h>
+#include <unistd.h>
 #include "../include/EVE.h"
 #include "../include/HAL.h"
 #include "../include/EVE_config.h"
