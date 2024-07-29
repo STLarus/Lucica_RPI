@@ -3,6 +3,7 @@
 
 void main(void)
 {
+	
 	EVE_Init();
 	EVE_BEGIN(EVE_BEGIN_BITMAPS);
 	EVE_VERTEX2F(200, 200);	//koordinate
