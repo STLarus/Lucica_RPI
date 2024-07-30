@@ -35,6 +35,9 @@
     <ClCompile Include="SOURCE\EVE_HAL.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="SOURCE\mongoose.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INCLUDE\EVE.h">
@@ -50,6 +53,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\MCU.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\mongoose.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
