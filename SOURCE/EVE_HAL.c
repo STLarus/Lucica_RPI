@@ -32,6 +32,8 @@
 #define SPI_CHANNEL 1  // SPI kanal koji koristite (0 ili 1)
 #define SPI_SPEED 10000000  // Brzina SPI-a (10MHz)
 
+#define PD_PIN	14
+
 // Used to navigate command ring buffer
 static uint16_t writeCmdPointer = 0x0000;
 
@@ -73,13 +75,24 @@ void addSpiOverlay() {
 
 
 
-int SPI1_enable() {
+int SPI1_enable()
+{
 	// Dodavanje SPI1 overlay-a u config.txt
 	addSpiOverlay();
 
 	return 0;
 }
 
+void MCU_Setup(void)
+{
+
+}
+
+void MCU_Init(void)
+{
+	pinMode(PD_PIN, OUTPUT);	//PD pin
+	SPI1_enable();
+}
 
 void HAL_EVE_Init(void)
 {
@@ -91,11 +104,11 @@ void HAL_EVE_Init(void)
 	HAL_ChipSelect(0);
 
 	// Reset the display
-	MCU_Delay_20ms();
+	usleep(20000);
 	HAL_PowerDown(1);
-	MCU_Delay_20ms();
+	usleep(20000);
 	HAL_PowerDown(0);
-	MCU_Delay_20ms();
+	usleep(20000);
 
 #if (defined EVE1_ENABLE)
 	// FT80x_selection - FT80x modules from BRT generally use external crystal 
@@ -145,13 +158,34 @@ void HAL_EVE_Init(void)
 void HAL_PowerDown(int8_t enable)
 {
 	if (enable)
-		MCU_PDlow();
+		digitalWrite(PD_PIN, LOW);
 	else
-		MCU_PDhigh();
+		digitalWrite(PD_PIN, HIGH);
 }
 
 
 // ################# COMBINED ADDRESSING AND DATA FUNCTIONS ####################
+void HAL_ChipSelect(int8_t state)
+{
+
+}
+void HAL_SetWriteAddress(uint32_t address) {
+	// Postavljanje najvišeg bita za pisanje (0x80)
+	address |= 0x800000;
+
+	// Pretvorba adrese u bajtove
+	uint8_t data[4];
+	data[0] = (address >> 16) & 0xFF;  // Najviši bajt
+	data[1] = (address >> 8) & 0xFF;   // Srednji bajt
+	data[2] = address & 0xFF;          // Najniži bajt
+	data[3] = 0x00;  // Naredba za pisanje (može biti specifično za vaš uređaj)
+
+	// Slanje adrese putem SPI
+	if (wiringPiSPIDataRW(SPI_CHANNEL, data, 4) == -1) {
+		printf("Neuspješno slanje SPI podataka\n");
+	}
+}
+
 
 /*
 Imam mogućnost ds s eupravlja sa CS linijom  a tada se koriste
@@ -163,6 +197,47 @@ Imam mogućnost ds s eupravlja sa CS linijom  a tada se koriste
 
 	Treba i podesiti RPI da koristi SPI1
 */
+// -------------- Write a 32-bit value  --------------------
+void HAL_Write32(uint32_t val32)
+{
+	uint8_t data[4];
+
+	data[0] = (uint8_t)(val32 >> 24);
+	data[1] = (uint8_t)(val32 >> 16);
+	data[2] = (uint8_t)(val32 >> 8);
+	data[3] = (uint8_t)(val32);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 4);
+	//CS_High();
+}
+// -------------- Write a 16-bit value  --------------------
+void HAL_Write16(uint16_t val16)
+{
+
+	uint8_t data[2];
+
+
+	data[0] = (uint8_t)(val16 >> 8);
+	data[1] = (uint8_t)(val16);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 2);
+	//CS_High();
+}
+
+// -------------- Write an 8-bit value  --------------------
+void HAL_Write8(uint8_t val8)
+{
+	uint8_t data[1];
+
+
+	data[0] = (uint8_t)(val8);
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, data, 1);
+	//CS_High();
+}
 
 // -------------- Write a 32-bit value to specified address --------------------
 void HAL_MemWrite32(uint32_t address, uint32_t val32)

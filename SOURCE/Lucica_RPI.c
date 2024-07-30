@@ -1,10 +1,13 @@
-#include <stdio.h>
+﻿#include <stdio.h>
+#include "../INCLUDE/EVE.h"
 
-int main(int argc, char *argv[])
+void main(void)
 {
-	char sz[] = "Hello, World!\n";	/* Hover mouse over "sz" while debugging to see its contents */
-	printf("%s", sz);	
-	fflush(stdout); /* <============== Put a breakpoint here */
-	return 0;
+	
+	EVE_Init();
+	EVE_BEGIN(EVE_BEGIN_BITMAPS);
+	EVE_VERTEX2F(200, 200);	//koordinate
+	EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
+	EVE_END();
 
 	}
