@@ -24,14 +24,15 @@
     <ToolchainID>
       <ID>com.visualgdb.raspberry_pi</ID>
       <Version>
-        <GCC>10.2.1</GCC>
-        <GDB>10.1</GDB>
-        <Revision>2</Revision>
+        <GCC>12.2.0</GCC>
+        <GDB>13.1</GDB>
+        <Revision>1</Revision>
       </Version>
     </ToolchainID>
     <ProjectFile>Lucica_RPI.vcxproj</ProjectFile>
     <RemoteBuildEnvironment>
       <Records />
+      <EnvironmentSetupFiles />
     </RemoteBuildEnvironment>
     <ParallelJobCount>1</ParallelJobCount>
     <SuppressDirectoryChangeMessages>true</SuppressDirectoryChangeMessages>
