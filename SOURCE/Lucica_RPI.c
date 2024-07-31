@@ -71,10 +71,10 @@ void main(void)
 	bool enable = true;
 	for (;;) {
 		mg_mgr_poll(&mgr, 50);
-		if (enable && !gpio_get_level(39)) {
+		/*if (enable && !gpio_get_level(39)) {
 			enable = false;
 			mg_http_connect(&mgr, s_url, fn, &enable);
-		}
+		}*/
 	}
 
 	}

@@ -36,15 +36,18 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
-      <CLanguageStandard>C11</CLanguageStandard>
-      <AdditionalIncludeDirectories>C:\SysGCC\raspberry\arm-linux-gnueabihf\sysroot\usr\local\include;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>GNU99</CLanguageStandard>
+      <AdditionalIncludeDirectories>=/usr/include;=/home/s/WiringPi/wiringPi;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions />
+      <CPPLanguageStandard />
     </ClCompile>
     <Link>
-      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
-      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
-      <AdditionalLibraryNames>wiringPi</AdditionalLibraryNames>
+      <AdditionalLinkerInputs>%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>wiringPi;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
       <LinkerScript />
+      <AdditionalOptions />
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
