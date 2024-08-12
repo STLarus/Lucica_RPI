@@ -42,10 +42,14 @@ static uint16_t writeCmdPointer = 0x0000;
 #define CONFIG_FILE "/boot/config.txt"
 #define DTO_OVERLAY "dtoverlay=spi1-3cs"
 
+
+
 void addSpiOverlay() {
+	
 	FILE* file = fopen(CONFIG_FILE, "r+");
 	if (file == NULL) {
 		perror("Otvaranje config.txt nije uspjelo");
+		printf("Greška kod: %d\n", errno);
 		//exit(EXIT_FAILURE);
 	}
 
@@ -78,7 +82,7 @@ void addSpiOverlay() {
 int SPI1_enable()
 {
 	// Dodavanje SPI1 overlay-a u config.txt
-	addSpiOverlay();
+	//addSpiOverlay();
 
 	return 0;
 }
@@ -88,9 +92,22 @@ void MCU_Setup(void)
 
 }
 
+#define SPI_CHANNEL    1  // SPI1 kanal
+#define SPI_SPEED      500000  // Brzina SPI (500 kHz)
+
 void MCU_Init(void)
 {
+	if (wiringPiSetup() == -1) {
+		printf("WiringPi setup failed!\n");
+		return 1;
+	}
+	wiringPiSetupGpio();
 	pinMode(PD_PIN, OUTPUT);	//PD pin
+
+	if (wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) == -1) {
+		printf("SPI setup failed!\n");
+		return 1;
+	}
 	SPI1_enable();
 }
 
