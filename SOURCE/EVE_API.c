@@ -68,7 +68,8 @@ void EVE_Init(void)
 	int i;
 
 	HAL_EVE_Init();
-
+	
+	
 	// ------------------------- Display settings ------------------------------
 
 	// LCD display parameters

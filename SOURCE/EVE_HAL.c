@@ -42,7 +42,21 @@ static uint16_t writeCmdPointer = 0x0000;
 #define CONFIG_FILE "/boot/config.txt"
 #define DTO_OVERLAY "dtoverlay=spi1-3cs"
 
+void jebiga(void)
+{
+	uint8_t addr[3];
+	uint8_t data[1] = { 0 };
+	uint8_t retval;
 
+	addr[0] = 0x01;
+	addr[1] = 0x02;
+	addr[2] = 0x03;
+
+	//CS_Low();
+	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
+	usleep(10000);
+	//wiringPiSPIDataRW(1, data, 3);
+}
 
 void addSpiOverlay() {
 	
@@ -109,6 +123,8 @@ void MCU_Init(void)
 		return 1;
 	}
 	SPI1_enable();
+	while (1)
+		jebiga();
 }
 
 void HAL_EVE_Init(void)
