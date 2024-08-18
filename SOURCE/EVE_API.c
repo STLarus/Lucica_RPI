@@ -141,7 +141,7 @@ void EVE_Init(void)
 	// --------------------- Clear screen ready to start -----------------------
 	EVE_LIB_BeginCoProList();
 	EVE_CMD_DLSTART();
-	EVE_CLEAR_COLOR_RGB(0, 0, 0);
+	EVE_CLEAR_COLOR_RGB(255, 0, 0);
 	EVE_CLEAR(1,1,1);
 	EVE_DISPLAY();
 	EVE_CMD_SWAP();

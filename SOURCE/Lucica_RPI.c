@@ -1,6 +1,8 @@
 ﻿#include <stdio.h>
 #include "../INCLUDE/EVE.h"
 #include "../INCLUDE/mongoose.h"
+#include <stdio.h>
+#include <wiringPi.h>
 
 #define BOT_TOKEN   "jure"
 #define CHAT_ID 12345678
@@ -55,19 +57,65 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 	}
 }
 
-void main(void)
+
+
+int main(void) {
+	int spiChannel = 1;  // SPI1
+	int speed = 1000000; // 1 MHz
+	int mode = 0;        // SPI mode 0
+	int csPin = 16;      // GPIO16 (pin 36), ručno kontroliran CS
+
+	// Inicijalizacija WiringPi GPIO sistema
+	if (wiringPiSetupGpio() == -1) {
+		fprintf(stderr, "Failed to initialize WiringPi.\n");
+		return 1;
+	}
+
+	// Postavljanje GPIO16 (CS) kao izlaznog pina
+	pinMode(csPin, OUTPUT);
+	digitalWrite(csPin, HIGH);  // Postavite CS na HIGH
+
+	// Inicijalizacija SPI1 bez hardverskog upravljanja CS-om
+	int fd = wiringPiSPISetupMode(spiChannel, speed, mode);
+	if (fd < 0) {
+		fprintf(stderr, "Failed to initialize SPI1.\n");
+		return 1;
+	}
+
+	// Priprema podataka za slanje
+	unsigned char dataToSend[2] = { 0xAB, 0xCD };
+
+	// Ručno postavljanje CS na LOW prije slanja podataka
+	digitalWrite(csPin, LOW);
+
+	// Slanje podataka preko SPI1
+	if (wiringPiSPIDataRW(spiChannel, dataToSend, sizeof(dataToSend)) == -1) {
+		fprintf(stderr, "Failed to send data via SPI1.\n");
+		return 1;
+	}
+
+	// Ručno postavljanje CS na HIGH nakon slanja podataka
+	digitalWrite(csPin, HIGH);
+
+	printf("Data sent: 0x%X 0x%X\n", dataToSend[0], dataToSend[1]);
+
+	return 0;
+}
+
+
+void mainxx(void)
 {
 
 	EVE_Init();
 	
 	
 	EVE_BEGIN(EVE_BEGIN_BITMAPS);
-	EVE_VERTEX2F(200, 200);	//koordinate
-	EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
-	EVE_END();
+	//EVE_VERTEX2F(200, 200);	//koordinate
+	//EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
+	//EVE_END();
 
 
-	/*struct mg_mgr mgr;
+/*	struct mg_mgr mgr;
 	mg_log_set(MG_LL_INFO);
 	mg_mgr_init(&mgr);
 	bool enable = true;

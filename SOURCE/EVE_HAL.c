@@ -21,7 +21,8 @@
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-
+//#include "../WiringPI/wiringPi.h"
+//#include "../WiringPI/wiringPiSPI.h"
 
 #include "../INCLUDE/EVE.h"
 #include "../INCLUDE/HAL.h"
@@ -30,7 +31,8 @@
 
 
 #define SPI_CHANNEL 1  // SPI kanal koji koristite (0 ili 1)
-#define SPI_SPEED 10000000  // Brzina SPI-a (10MHz)
+#define	CS_PORT	2
+#define SPI_SPEED 1000000  // Brzina SPI-a (10MHz)
 
 #define PD_PIN	14
 
@@ -49,17 +51,16 @@ void jebiga(void)
 	uint8_t retval;
 
 	addr[0] = 0x01;
-	addr[1] = 0x02;
+	addr[1] = 0x55;
 	addr[2] = 0x03;
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	usleep(10000);
-	//wiringPiSPIDataRW(1, data, 3);
+	usleep(100);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, &addr[0], 3);
+
 }
 
 void addSpiOverlay() {
-	
+
 	FILE* file = fopen(CONFIG_FILE, "r+");
 	if (file == NULL) {
 		perror("Otvaranje config.txt nije uspjelo");
@@ -106,8 +107,6 @@ void MCU_Setup(void)
 
 }
 
-#define SPI_CHANNEL    1  // SPI1 kanal
-#define SPI_SPEED      500000  // Brzina SPI (500 kHz)
 
 void MCU_Init(void)
 {
@@ -118,13 +117,15 @@ void MCU_Init(void)
 	wiringPiSetupGpio();
 	pinMode(PD_PIN, OUTPUT);	//PD pin
 
-	if (wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) == -1) {
-		printf("SPI setup failed!\n");
-		return 1;
+
+	// Uređaj 1 na SPI1, mode 0, 1 MHz
+	int fd1 = wiringPiSPIxSetupMode(SPI_CHANNEL, CS_PORT, SPI_SPEED, 0);
+	if (fd1 == -1) {
+		printf("Neuspjeh u inicijalizaciji SPI uređaja 1!\n");
+		return -1;
 	}
-	SPI1_enable();
-	while (1)
-		jebiga();
+
+
 }
 
 void HAL_EVE_Init(void)
@@ -166,7 +167,7 @@ void HAL_EVE_Init(void)
 	// Set active
 	HAL_HostCmdWrite(0, 0x00);
 
-	//	MCU_Delay_500ms();		// Optional delay can be commented so long as we check the REG_ID and REG_CPURESET
+	usleep(500000);		// Optional delay can be commented so long as we check the REG_ID and REG_CPURESET
 
 		// Read REG_ID register (0x302000) until reads 0x7C
 	while ((val = HAL_MemRead8(EVE_REG_ID)) != 0x7C)
@@ -214,7 +215,7 @@ void HAL_SetWriteAddress(uint32_t address) {
 	data[3] = 0x00;  // Naredba za pisanje (može biti specifično za vaš uređaj)
 
 	// Slanje adrese putem SPI
-	if (wiringPiSPIDataRW(SPI_CHANNEL, data, 4) == -1) {
+	if (wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4) == -1) {
 		printf("Neuspješno slanje SPI podataka\n");
 	}
 }
@@ -240,9 +241,8 @@ void HAL_Write32(uint32_t val32)
 	data[2] = (uint8_t)(val32 >> 8);
 	data[3] = (uint8_t)(val32);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 4);
-	//CS_High();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
+
 }
 // -------------- Write a 16-bit value  --------------------
 void HAL_Write16(uint16_t val16)
@@ -253,10 +253,8 @@ void HAL_Write16(uint16_t val16)
 
 	data[0] = (uint8_t)(val16 >> 8);
 	data[1] = (uint8_t)(val16);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 2);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 2);
-	//CS_High();
 }
 
 // -------------- Write an 8-bit value  --------------------
@@ -264,92 +262,81 @@ void HAL_Write8(uint8_t val8)
 {
 	uint8_t data[1];
 
-
 	data[0] = (uint8_t)(val8);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 1);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 1);
-	//CS_High();
 }
 
 // -------------- Write a 32-bit value to specified address --------------------
 void HAL_MemWrite32(uint32_t address, uint32_t val32)
 {
-	uint8_t addr[3];
-	uint8_t data[4];
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	uint8_t data[8];
 
-	data[0] = (uint8_t)(val32 >> 24);
-	data[1] = (uint8_t)(val32 >> 16);
-	data[2] = (uint8_t)(val32 >> 8);
-	data[3] = (uint8_t)(val32);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 4);
-	//CS_High();
+	data[3] = (uint8_t)(val32 >> 24);
+	data[4] = (uint8_t)(val32 >> 16);
+	data[5] = (uint8_t)(val32 >> 8);
+	data[6] = (uint8_t)(val32);
+
+
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 7);
+
 }
 
 // -------------- Write a 16-bit value to specified address --------------------
 void HAL_MemWrite16(uint32_t address, uint16_t val16)
 {
-	uint8_t addr[3];
-	uint8_t data[2];
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	uint8_t data[6];
 
-	data[0] = (uint8_t)(val16 >> 8);
-	data[1] = (uint8_t)(val16);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 2);
-	//CS_High();
+	data[3] = (uint8_t)(val16 >> 8);
+	data[4] = (uint8_t)(val16);
+
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
+
 }
 
 // -------------- Write an 8-bit value to specified address --------------------
 void HAL_MemWrite8(uint32_t address, uint8_t val8)
 {
-	uint8_t addr[3];
-	uint8_t data[1];
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	uint8_t data[5];
 
-	data[0] = (uint8_t)(val8);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 1);
-	//CS_High();
+	data[3] = (uint8_t)(val8);
+
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
 }
 
 // -------------- Read a 32-bit value from specified address --------------------
 uint32_t HAL_MemRead32(uint32_t address)
 {
-	uint8_t addr[3];
-	uint8_t data[4] = { 0,0,0,0 };
+
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
 	uint32_t retval;
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[3] = 0x00;		//dummy
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 8);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 4);
-	//CS_High();
 
-	retval = ((uint32_t)data[0] << 24) |
-		((uint32_t)data[1] << 16) |
-		((uint32_t)data[2] << 8) |
-		((uint32_t)data[3]);
+	retval = ((uint32_t)data[4] << 24) |
+		((uint32_t)data[5] << 16) |
+		((uint32_t)data[6] << 8) |
+		((uint32_t)data[7]);
 
 	return retval;
 
@@ -357,42 +344,36 @@ uint32_t HAL_MemRead32(uint32_t address)
 // -------------- Read a 16-bit value from specified address --------------------
 uint16_t HAL_MemRead16(uint32_t address)
 {
-	uint8_t addr[3];
-	uint8_t data[2] = { 0,0 };
+
+	uint8_t data[6] = { 0,0 ,0,0,0,0 };
 	uint16_t retval;
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[3] = 0x00;	//dummy
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 6);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 2);
-	//CS_High();
-
-	retval = ((uint16_t)data[0] << 8) | ((uint16_t)data[0]);
+	retval = ((uint16_t)data[4] << 8) | ((uint16_t)data[5]);
 
 	return retval;
-
 }
+
+
 // -------------- Read an 8-bit value from specified address --------------------
 uint8_t HAL_MemRead8(uint32_t address)
 {
-	uint8_t addr[3];
-	uint8_t data[1] = { 0 };
+	uint8_t data[8];
 	uint8_t retval;
 
-	addr[0] = (uint8_t)(address >> 16);
-	addr[1] = (uint8_t)(address >> 8);
-	addr[2] = (uint8_t)(address);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[3] = 0;	//DUMMY byte
+	data[4] = 0;	
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, addr, 3);
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 1);
-	//CS_High();
-
-	retval = ((uint8_t)data[0]);
-
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
+	retval = ((uint8_t)data[4]);
 	return retval;
 }
 // ############################# HOST COMMANDS #################################
@@ -405,10 +386,8 @@ void HAL_HostCmdWrite(uint8_t cmd, uint8_t param)
 	data[0] = cmd;
 	data[1] = param;
 	data[2] = 0x00;
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 3);
 
-	//CS_Low();
-	wiringPiSPIDataRW(SPI_CHANNEL, data, 3);
-	//CS_High();
 
 }
 // ######################## SUPPORTING FUNCTIONS ###############################
