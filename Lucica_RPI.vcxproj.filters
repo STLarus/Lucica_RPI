@@ -32,10 +32,13 @@
     <ClCompile Include="SOURCE\EVE_API.c">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\EVE_HAL.c">
+    <ClCompile Include="SOURCE\mongoose.c">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\mongoose.c">
+    <ClCompile Include="SOURCE\EVE_HAL_Linux.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\EVE_LINUX_RPI.c">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,6 +59,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\mongoose.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\Platform.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

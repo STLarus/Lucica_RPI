@@ -1,66 +1,64 @@
 /**
  @file EVE_API.c
  */
-/*
- * ============================================================================
- * History
- * =======
- * Nov 2019		Initial beta for FT81x and FT80x
- * Mar 2020		Updated beta - added BT815/6 commands
- * Mar 2021		Beta with BT817/8 support added
- *
- *
- *
- *
- *
- * (C) Copyright,  Bridgetek Pte. Ltd.
- * ============================================================================
- *
- * This source code ("the Software") is provided by Bridgetek Pte Ltd
- * ("Bridgetek") subject to the licence terms set out
- * http://www.ftdichip.com/FTSourceCodeLicenceTerms.htm ("the Licence Terms").
- * You must read the Licence Terms before downloading or using the Software.
- * By installing or using the Software you agree to the Licence Terms. If you
- * do not agree to the Licence Terms then do not download or use the Software.
- *
- * Without prejudice to the Licence Terms, here is a summary of some of the key
- * terms of the Licence Terms (and in the event of any conflict between this
- * summary and the Licence Terms then the text of the Licence Terms will
- * prevail).
- *
- * The Software is provided "as is".
- * There are no warranties (or similar) in relation to the quality of the
- * Software. You use it at your own risk.
- * The Software should not be used in, or for, any medical device, system or
- * appliance. There are exclusions of Bridgetek liability for certain types of loss
- * such as: special loss or damage; incidental loss or damage; indirect or
- * consequential loss or damage; loss of income; loss of business; loss of
- * profits; loss of revenue; loss of contracts; business interruption; loss of
- * the use of money or anticipated savings; loss of information; loss of
- * opportunity; loss of goodwill or reputation; and/or loss of, damage to or
- * corruption of data.
- * There is a monetary cap on Bridgetek's liability.
- * The Software may have subsequently been amended by another user and then
- * distributed by that other user ("Adapted Software").  If so that user may
- * have additional licence terms that apply to those amendments. However, Bridgetek
- * has no liability in relation to those amendments.
- * ============================================================================
- */
+ /*
+  * ============================================================================
+  * History
+  * =======
+  * Nov 2019		Initial beta for FT81x and FT80x
+  * Mar 2020		Updated beta - added BT815/6 commands
+  * Mar 2021		Beta with BT817/8 support added
+  *
+  *
+  *
+  *
+  *
+  * (C) Copyright,  Bridgetek Pte. Ltd.
+  * ============================================================================
+  *
+  * This source code ("the Software") is provided by Bridgetek Pte Ltd
+  * ("Bridgetek") subject to the licence terms set out
+  * http://www.ftdichip.com/FTSourceCodeLicenceTerms.htm ("the Licence Terms").
+  * You must read the Licence Terms before downloading or using the Software.
+  * By installing or using the Software you agree to the Licence Terms. If you
+  * do not agree to the Licence Terms then do not download or use the Software.
+  *
+  * Without prejudice to the Licence Terms, here is a summary of some of the key
+  * terms of the Licence Terms (and in the event of any conflict between this
+  * summary and the Licence Terms then the text of the Licence Terms will
+  * prevail).
+  *
+  * The Software is provided "as is".
+  * There are no warranties (or similar) in relation to the quality of the
+  * Software. You use it at your own risk.
+  * The Software should not be used in, or for, any medical device, system or
+  * appliance. There are exclusions of Bridgetek liability for certain types of loss
+  * such as: special loss or damage; incidental loss or damage; indirect or
+  * consequential loss or damage; loss of income; loss of business; loss of
+  * profits; loss of revenue; loss of contracts; business interruption; loss of
+  * the use of money or anticipated savings; loss of information; loss of
+  * opportunity; loss of goodwill or reputation; and/or loss of, damage to or
+  * corruption of data.
+  * There is a monetary cap on Bridgetek's liability.
+  * The Software may have subsequently been amended by another user and then
+  * distributed by that other user ("Adapted Software").  If so that user may
+  * have additional licence terms that apply to those amendments. However, Bridgetek
+  * has no liability in relation to those amendments.
+  * ============================================================================
+  */
 
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 #include <stdarg.h>
-#include <unistd.h>
 #include "../include/EVE.h"
 #include "../include/HAL.h"
-#include "../include/EVE_config.h"
 
-// Set beginning of graphics command memory
-//static uint32_t RAMCommandBuffer = EVE_RAM_CMD;
+  // Set beginning of graphics command memory
+  //static uint32_t RAMCommandBuffer = EVE_RAM_CMD;
 
-//##############################################################################
-// Library functions
-//##############################################################################
+  //##############################################################################
+  // Library functions
+  //##############################################################################
 
 void EVE_Init(void)
 {
@@ -68,43 +66,42 @@ void EVE_Init(void)
 	int i;
 
 	HAL_EVE_Init();
-	
-	
+
 	// ------------------------- Display settings ------------------------------
 
 	// LCD display parameters
 	// Active width of LCD display
-	HAL_MemWrite16(EVE_REG_HSIZE,   EVE_DISP_WIDTH);
+	HAL_MemWrite16(EVE_REG_HSIZE, EVE_DISP_WIDTH);
 	// Total number of clocks per line
-	HAL_MemWrite16(EVE_REG_HCYCLE,  EVE_DISP_HCYCLE);
+	HAL_MemWrite16(EVE_REG_HCYCLE, EVE_DISP_HCYCLE);
 	// Start of active line
 	HAL_MemWrite16(EVE_REG_HOFFSET, EVE_DISP_HOFFSET);
 	// Start of horizontal sync pulse
-	HAL_MemWrite16(EVE_REG_HSYNC0,  EVE_DISP_HSYNC0);
+	HAL_MemWrite16(EVE_REG_HSYNC0, EVE_DISP_HSYNC0);
 	// End of horizontal sync pulse
-	HAL_MemWrite16(EVE_REG_HSYNC1,  EVE_DISP_HSYNC1);
+	HAL_MemWrite16(EVE_REG_HSYNC1, EVE_DISP_HSYNC1);
 	// Active height of LCD display
-	HAL_MemWrite16(EVE_REG_VSIZE,   EVE_DISP_HEIGHT);
+	HAL_MemWrite16(EVE_REG_VSIZE, EVE_DISP_HEIGHT);
 	// Total number of lines per screen
-	HAL_MemWrite16(EVE_REG_VCYCLE,  EVE_DISP_VCYCLE);
+	HAL_MemWrite16(EVE_REG_VCYCLE, EVE_DISP_VCYCLE);
 	// Start of active screen
 	HAL_MemWrite16(EVE_REG_VOFFSET, EVE_DISP_VOFFSET);
 	// Start of vertical sync pulse
-	HAL_MemWrite16(EVE_REG_VSYNC0,  EVE_DISP_VSYNC0);
+	HAL_MemWrite16(EVE_REG_VSYNC0, EVE_DISP_VSYNC0);
 	// End of vertical sync pulse
-	HAL_MemWrite16(EVE_REG_VSYNC1,  EVE_DISP_VSYNC1);
+	HAL_MemWrite16(EVE_REG_VSYNC1, EVE_DISP_VSYNC1);
 	// Define RGB output pins
-	HAL_MemWrite8(EVE_REG_SWIZZLE,  EVE_DISP_SWIZZLE);
+	HAL_MemWrite8(EVE_REG_SWIZZLE, EVE_DISP_SWIZZLE);
 	// Define active edge of PCLK
 	HAL_MemWrite8(EVE_REG_PCLK_POL, EVE_DISP_PCLKPOL);
 	// Turn on or off CSpread
-	HAL_MemWrite8(EVE_REG_CSPREAD,  EVE_DISP_CSPREAD);
+	HAL_MemWrite8(EVE_REG_CSPREAD, EVE_DISP_CSPREAD);
 	// Turn on or off Dither
-	HAL_MemWrite8(EVE_REG_DITHER,  EVE_DISP_DITHER);
+	HAL_MemWrite8(EVE_REG_DITHER, EVE_DISP_DITHER);
 
 	// Write first display list
-	HAL_MemWrite32((EVE_RAM_DL + 0), EVE_ENC_CLEAR_COLOR_RGB(0,0,0));
-	HAL_MemWrite32((EVE_RAM_DL + 4), EVE_ENC_CLEAR(1,1,1));
+	HAL_MemWrite32((EVE_RAM_DL + 0), EVE_ENC_CLEAR_COLOR_RGB(0, 0, 0));
+	HAL_MemWrite32((EVE_RAM_DL + 4), EVE_ENC_CLEAR(1, 1, 1));
 	HAL_MemWrite32((EVE_RAM_DL + 8), EVE_ENC_DISPLAY());
 	HAL_MemWrite8(EVE_REG_DLSWAP, EVE_DLSWAP_FRAME);
 
@@ -117,13 +114,13 @@ void EVE_Init(void)
 
 	// Write the PCLK or PCLK_FREQ register
 	// If setting PCLK_FREQ then also set REG_PCLK to 1 to enable extsync mode
-	#if (defined EVE4_ENABLE) && (defined SET_PCLK_FREQ)
-	HAL_MemWrite16(EVE_REG_PCLK_FREQ,  EVE_DISP_PCLK_FREQ);
+#if (defined EVE4_ENABLE) && (defined SET_PCLK_FREQ)
+	HAL_MemWrite16(EVE_REG_PCLK_FREQ, EVE_DISP_PCLK_FREQ);
 	HAL_MemWrite8(EVE_REG_PCLK, 1);
-	# else
-	// Now start clocking data to the LCD panel
+# else
+// Now start clocking data to the LCD panel
 	HAL_MemWrite8(EVE_REG_PCLK, EVE_DISP_PCLK);
-	#endif
+#endif
 
 	HAL_MemWrite8(EVE_REG_PWM_DUTY, 127);
 
@@ -141,8 +138,8 @@ void EVE_Init(void)
 	// --------------------- Clear screen ready to start -----------------------
 	EVE_LIB_BeginCoProList();
 	EVE_CMD_DLSTART();
-	EVE_CLEAR_COLOR_RGB(255, 0, 0);
-	EVE_CLEAR(1,1,1);
+	EVE_CLEAR_COLOR_RGB(0, 0, 0);
+	EVE_CLEAR(1, 1, 1);
 	EVE_DISPLAY();
 	EVE_CMD_SWAP();
 	EVE_LIB_EndCoProList();
@@ -155,11 +152,11 @@ void EVE_Init(void)
 	EVE_LIB_BeginCoProList();
 	EVE_CMD_DLSTART();
 	EVE_CLEAR_COLOR_RGB(0, 0, 0);
-	EVE_CLEAR(1,1,1);
+	EVE_CLEAR(1, 1, 1);
 	for (i = 0; i < 16; i++)
 	{
 		EVE_BITMAP_HANDLE(i);
-		EVE_CMD_SETBITMAP(0,0,0,0);
+		EVE_CMD_SETBITMAP(0, 0, 0, 0);
 	}
 	EVE_DISPLAY();
 	EVE_CMD_SWAP();
@@ -167,18 +164,18 @@ void EVE_Init(void)
 	EVE_LIB_AwaitCoProEmpty();
 
 # else
-    
-   	// ---------------------- Reset all bitmap properties ------------------------
+
+	// ---------------------- Reset all bitmap properties ------------------------
 	EVE_LIB_BeginCoProList();
 	EVE_CMD_DLSTART();
 	EVE_CLEAR_COLOR_RGB(0, 0, 0);
-	EVE_CLEAR(1,1,1);
+	EVE_CLEAR(1, 1, 1);
 	for (i = 0; i < 16; i++)
 	{
 		EVE_BITMAP_HANDLE(i);
 		//EVE_CMD_SETBITMAP(0,0,0,0);
-        EVE_BITMAP_LAYOUT(0, 0, 0);
-    	EVE_BITMAP_SIZE(0, 0, 0, 0, 0);
+		EVE_BITMAP_LAYOUT(0, 0, 0);
+		EVE_BITMAP_SIZE(0, 0, 0, 0, 0);
 	}
 	EVE_DISPLAY();
 	EVE_CMD_SWAP();
@@ -216,7 +213,7 @@ void EVE_LIB_AwaitCoProEmpty(void)
 }
 
 // Writes a block of data to the RAM_G
-void EVE_LIB_WriteDataToRAMG(const uint8_t *ImgData, uint32_t DataSize, uint32_t DestAddress)
+void EVE_LIB_WriteDataToRAMG(const uint8_t* ImgData, uint32_t DataSize, uint32_t DestAddress)
 {
 	// Begins SPI transaction
 	HAL_ChipSelect(1);
@@ -229,7 +226,7 @@ void EVE_LIB_WriteDataToRAMG(const uint8_t *ImgData, uint32_t DataSize, uint32_t
 	// Send data as 32 bits.
 	while (DataSize)
 	{
-		HAL_Write32(*(uint32_t *)ImgData);
+		HAL_Write32(*(uint32_t*)ImgData);
 		ImgData += 4;
 		DataSize -= 4;
 	}
@@ -239,7 +236,7 @@ void EVE_LIB_WriteDataToRAMG(const uint8_t *ImgData, uint32_t DataSize, uint32_t
 }
 
 // Reads a block of data from the RAM_G
-void EVE_LIB_ReadDataFromRAMG(uint8_t *ImgData, uint32_t DataSize, uint32_t SrcAddress)
+void EVE_LIB_ReadDataFromRAMG(uint8_t* ImgData, uint32_t DataSize, uint32_t SrcAddress)
 {
 	// Begins SPI transaction
 	HAL_ChipSelect(1);
@@ -252,7 +249,7 @@ void EVE_LIB_ReadDataFromRAMG(uint8_t *ImgData, uint32_t DataSize, uint32_t SrcA
 	// Send data as 32 bits.
 	while (DataSize)
 	{
-		*(uint32_t *)ImgData = HAL_Read32();
+		*(uint32_t*)ImgData = HAL_Read32();
 		ImgData += 4;
 		DataSize -= 4;
 	}
@@ -262,7 +259,7 @@ void EVE_LIB_ReadDataFromRAMG(uint8_t *ImgData, uint32_t DataSize, uint32_t SrcA
 }
 
 // Write a block of data to the coprocessor
-void EVE_LIB_WriteDataToCMD(const uint8_t *ImgData, uint32_t DataSize)
+void EVE_LIB_WriteDataToCMD(const uint8_t* ImgData, uint32_t DataSize)
 {
 	uint32_t CurrentIndex = 0;
 	uint32_t ChunkSize = 0;
@@ -311,7 +308,7 @@ void EVE_LIB_WriteDataToCMD(const uint8_t *ImgData, uint32_t DataSize)
 
 		// to the next location in the FIFO
 		HAL_SetWriteAddress(EVE_RAM_CMD + HAL_GetCmdPointer());
-		
+
 		HAL_Write(ImgData, ChunkSize);
 		ImgData += ChunkSize;
 		CurrentIndex += ChunkSize;
@@ -346,7 +343,7 @@ uint16_t EVE_LIB_SendString(const char* string)
 	// Send string as 32 bit data.
 	while (length)
 	{
-		HAL_Write32(*(uint32_t *)string);
+		HAL_Write32(*(uint32_t*)string);
 		string += 4;
 		length -= 4;
 	}
@@ -354,7 +351,7 @@ uint16_t EVE_LIB_SendString(const char* string)
 	return CommandSize;
 }
 
-void EVE_LIB_GetProps(uint32_t *addr, uint32_t *width, uint32_t *height)
+void EVE_LIB_GetProps(uint32_t* addr, uint32_t* width, uint32_t* height)
 {
 	uint32_t WritePointer;
 
@@ -398,7 +395,7 @@ void EVE_CLEAR_COLOR(uint32_t c)
 
 void EVE_CLEAR(uint8_t C, uint8_t S, uint8_t T)
 {
-	HAL_Write32(EVE_ENC_CLEAR((C & 0x01),(S & 0x01),(T & 0x01)));
+	HAL_Write32(EVE_ENC_CLEAR((C & 0x01), (S & 0x01), (T & 0x01)));
 	HAL_IncCmdPointer(4);
 }
 
@@ -446,7 +443,7 @@ void EVE_BITMAP_SOURCE2(uint8_t flash_or_ram, int32_t addr)
 }
 #endif // (defined EVE3_ENABLE || defined EVE4_ENABLE)
 
-void EVE_BITMAP_LAYOUT(uint8_t format, uint16_t linestride, uint16_t height )
+void EVE_BITMAP_LAYOUT(uint8_t format, uint16_t linestride, uint16_t height)
 {
 	HAL_Write32(EVE_ENC_BITMAP_LAYOUT(format, linestride, height));
 	HAL_IncCmdPointer(4);
@@ -1026,7 +1023,7 @@ void EVE_CMD_MEMCRC(uint32_t ptr, uint32_t num, uint32_t result)
 uint8_t COUNT_ARGS(const char* string)
 {
 	uint8_t count = 0;
-	const char *tmp = string;
+	const char* tmp = string;
 
 	while ((tmp = strstr(tmp, "%")))
 	{
@@ -1047,14 +1044,14 @@ void EVE_CMD_TEXT(int16_t x, int16_t y, int16_t font, uint16_t options, const ch
 	va_list args;
 	uint32_t CommandSize;
 	uint32_t StringLength;
-	uint8_t i, num=0;
+	uint8_t i, num = 0;
 
 	va_start(args, string);
 
-	#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
+#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
 	//#if defined (BT81X_ENABLE) /* OPT_FORMAT not defined in FT8xx chip */
 	num = (options & EVE_OPT_FORMAT) ? (COUNT_ARGS(string)) : (0); //Only check % characters if option OPT_FORMAT is set
-	#endif
+#endif
 
 	HAL_Write32(EVE_ENC_CMD_TEXT);
 	HAL_Write32(((uint32_t)y << 16) | (x & 0xffff));
@@ -1068,8 +1065,8 @@ void EVE_CMD_TEXT(int16_t x, int16_t y, int16_t font, uint16_t options, const ch
 		HAL_Write32((uint32_t)va_arg(args, uint32_t));
 	}
 
-	CommandSize = CommandSize + StringLength + (num*4);
-//	Gpu_CoCmd_EndFunc(phost, CMD_SIZE * (3+ num) + ((len + 1 + 3) & ~3));
+	CommandSize = CommandSize + StringLength + (num * 4);
+	//	Gpu_CoCmd_EndFunc(phost, CMD_SIZE * (3+ num) + ((len + 1 + 3) & ~3));
 
 	HAL_IncCmdPointer(CommandSize);
 
@@ -1081,14 +1078,14 @@ void EVE_CMD_BUTTON(int16_t x, int16_t y, int16_t w, int16_t h, int16_t font, ui
 	va_list args;
 	uint32_t CommandSize;
 	uint32_t StringLength;
-	uint8_t i, num=0;
+	uint8_t i, num = 0;
 
 	va_start(args, string);
 
-	#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
+#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
 	//#if defined (BT81X_ENABLE) /* OPT_FORMAT not defined in FT8xx chip */
 	num = (options & EVE_OPT_FORMAT) ? (COUNT_ARGS(string)) : (0); //Only check % characters if option OPT_FORMAT is set
-	#endif
+#endif
 
 	HAL_Write32(EVE_ENC_CMD_BUTTON);
 	HAL_Write32(((uint32_t)y << 16) | (x & 0xffff));
@@ -1103,7 +1100,7 @@ void EVE_CMD_BUTTON(int16_t x, int16_t y, int16_t w, int16_t h, int16_t font, ui
 		HAL_Write32((uint32_t)va_arg(args, uint32_t));
 	}
 
-	CommandSize = CommandSize + StringLength + (num*4);
+	CommandSize = CommandSize + StringLength + (num * 4);
 
 	HAL_IncCmdPointer(CommandSize);
 
@@ -1115,33 +1112,33 @@ void EVE_CMD_TOGGLE(int16_t x, int16_t y, int16_t w, int16_t font, uint16_t opti
 	va_list args;
 	uint32_t CommandSize;
 	uint32_t StringLength;
-	uint8_t i, num=0;
+	uint8_t i, num = 0;
 
 	va_start(args, string);
 
-	#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
+#if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
 	//#if defined (BT81X_ENABLE) /* OPT_FORMAT not defined in FT8xx chip */
 	num = (options & EVE_OPT_FORMAT) ? (COUNT_ARGS(string)) : (0); //Only check % characters if option OPT_FORMAT is set
-	#endif
+#endif
 
 	HAL_Write32(EVE_ENC_CMD_TOGGLE);
 	HAL_Write32(((uint32_t)y << 16) | (x & 0xffff));
 	HAL_Write32(((uint32_t)font << 16) | (w & 0xffff));
-	HAL_Write32(((uint32_t)state << 16)|options);
+	HAL_Write32(((uint32_t)state << 16) | options);
 	CommandSize = 16;
 
 	StringLength = EVE_LIB_SendString(string);
 
-	 for (i = 0; i < num; i++)
-	 {
-	 	HAL_Write32((uint32_t)va_arg(args, uint32_t));
-	 }
+	for (i = 0; i < num; i++)
+	{
+		HAL_Write32((uint32_t)va_arg(args, uint32_t));
+	}
 
-	 CommandSize = CommandSize + StringLength + (num*4);
+	CommandSize = CommandSize + StringLength + (num * 4);
 
-	 HAL_IncCmdPointer(CommandSize);
+	HAL_IncCmdPointer(CommandSize);
 
-	 va_end(args);
+	va_end(args);
 }
 
 // ############################# FT81x + BT81x  ################################
@@ -1314,41 +1311,41 @@ void EVE_CMD_FILLWIDTH(uint32_t s)
 
 void EVE_CMD_NOP()
 {
-  HAL_Write32(EVE_ENC_CMD_NOP);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_NOP);
+	HAL_IncCmdPointer(4);
 }
 
 void EVE_CMD_GETPOINT(int16_t x, int16_t y, uint32_t sx, uint32_t sy)
 {
-  HAL_Write32(EVE_ENC_CMD_GETPOINT);
-  HAL_Write32(((uint32_t)y<<16) |(x & 0xFFFF));
-  HAL_Write32(sx);
-  HAL_Write32(sy);
-  HAL_IncCmdPointer(16);
+	HAL_Write32(EVE_ENC_CMD_GETPOINT);
+	HAL_Write32(((uint32_t)y << 16) | (x & 0xFFFF));
+	HAL_Write32(sx);
+	HAL_Write32(sy);
+	HAL_IncCmdPointer(16);
 }
 
 void EVE_CMD_INFLATE2(uint32_t ptr, uint32_t options)
 {
-  HAL_Write32(EVE_ENC_CMD_INFLATE2);
-  HAL_Write32(ptr);
-  HAL_Write32(options);
-  HAL_IncCmdPointer(12);
+	HAL_Write32(EVE_ENC_CMD_INFLATE2);
+	HAL_Write32(ptr);
+	HAL_Write32(options);
+	HAL_IncCmdPointer(12);
 }
 
 void EVE_CMD_ROTATEAROUND(int32_t x, int32_t y, int32_t a, int32_t s)
 {
-  HAL_Write32(EVE_ENC_CMD_ROTATEAROUND);
-  HAL_Write32(x);
-  HAL_Write32(y);
-  HAL_Write32(a);
-  HAL_Write32(s);
-  HAL_IncCmdPointer(20);
+	HAL_Write32(EVE_ENC_CMD_ROTATEAROUND);
+	HAL_Write32(x);
+	HAL_Write32(y);
+	HAL_Write32(a);
+	HAL_Write32(s);
+	HAL_IncCmdPointer(20);
 }
 
 void EVE_CMD_FLASHERASE()
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHERASE);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_FLASHERASE);
+	HAL_IncCmdPointer(4);
 }
 
 /*
@@ -1356,31 +1353,31 @@ void EVE_CMD_FLASHERASE()
 	 - Destination flash address must be virgin (not used before)
 	 - data array must be aligned 256-bit
 	 */
-void EVE_CMD_FLASHWRITEEXT(uint32_t dest, uint32_t num, uint8_t *data)
+void EVE_CMD_FLASHWRITEEXT(uint32_t dest, uint32_t num, uint8_t* data)
 {
-  uint32_t i, send_data32=0, totalnum = (num+3)/4;
+	uint32_t i, send_data32 = 0, totalnum = (num + 3) / 4;
 
-  HAL_Write32(EVE_ENC_CMD_FLASHWRITE);
-  HAL_Write32(dest);
-  HAL_Write32(num);
-  for (i = 0; i < num; i=i+4)
-  {
-	  /* Pack 4 bytes into a 32-bit data each sending package */
-	  send_data32 = *data++;
-	  send_data32 |= (*data++) << 8;
-	  send_data32 |= (*data++) << 16;
-	  send_data32 |= (*data++) << 24;
-	  HAL_Write32(send_data32);
-  }
-  HAL_IncCmdPointer(4*(3+totalnum));
+	HAL_Write32(EVE_ENC_CMD_FLASHWRITE);
+	HAL_Write32(dest);
+	HAL_Write32(num);
+	for (i = 0; i < num; i = i + 4)
+	{
+		/* Pack 4 bytes into a 32-bit data each sending package */
+		send_data32 = *data++;
+		send_data32 |= (*data++) << 8;
+		send_data32 |= (*data++) << 16;
+		send_data32 |= (*data++) << 24;
+		HAL_Write32(send_data32);
+	}
+	HAL_IncCmdPointer(4 * (3 + totalnum));
 }
 
 void EVE_CMD_FLASHWRITE(uint32_t ptr, uint32_t num)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHWRITE);
-  HAL_Write32(ptr);
-  HAL_Write32(num);
-  HAL_IncCmdPointer(12);
+	HAL_Write32(EVE_ENC_CMD_FLASHWRITE);
+	HAL_Write32(ptr);
+	HAL_Write32(num);
+	HAL_IncCmdPointer(12);
 }
 /*
 	Writes the given data to flash.
@@ -1401,11 +1398,11 @@ void EVE_CMD_FLASHUPDATE(uint32_t dest, uint32_t src, uint32_t num)
 */
 void EVE_CMD_FLASHREAD(uint32_t dest, uint32_t src, uint32_t num)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHREAD);
-  HAL_Write32(dest);
-  HAL_Write32(src);
-  HAL_Write32(num);
-  HAL_IncCmdPointer(16);
+	HAL_Write32(EVE_ENC_CMD_FLASHREAD);
+	HAL_Write32(dest);
+	HAL_Write32(src);
+	HAL_Write32(num);
+	HAL_IncCmdPointer(16);
 }
 
 
@@ -1414,89 +1411,89 @@ void EVE_CMD_FLASHREAD(uint32_t dest, uint32_t src, uint32_t num)
 */
 void EVE_CMD_FLASHPROGRAM(uint32_t dest, uint32_t src, uint32_t num)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHPROGRAM);
-  HAL_Write32(dest);
-  HAL_Write32(src);
-  HAL_Write32(num);
-  HAL_IncCmdPointer(16);
+	HAL_Write32(EVE_ENC_CMD_FLASHPROGRAM);
+	HAL_Write32(dest);
+	HAL_Write32(src);
+	HAL_Write32(num);
+	HAL_IncCmdPointer(16);
 }
 
 
 void EVE_CMD_FLASHSOURCE(uint32_t ptr)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHSOURCE);
-  HAL_Write32(ptr);
-  HAL_IncCmdPointer(8);
+	HAL_Write32(EVE_ENC_CMD_FLASHSOURCE);
+	HAL_Write32(ptr);
+	HAL_IncCmdPointer(8);
 }
 
 
 void EVE_CMD_FLASHSPITX(uint32_t num)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHSPITX);
-  HAL_Write32(num);
-  HAL_IncCmdPointer(8);
+	HAL_Write32(EVE_ENC_CMD_FLASHSPITX);
+	HAL_Write32(num);
+	HAL_IncCmdPointer(8);
 }
 
 void EVE_CMD_FLASHFAST(uint32_t result)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHFAST);
-  HAL_Write32(result);
-  HAL_IncCmdPointer(8);
+	HAL_Write32(EVE_ENC_CMD_FLASHFAST);
+	HAL_Write32(result);
+	HAL_IncCmdPointer(8);
 }
 void EVE_CMD_FLASHSPIRX(uint32_t ptr, uint32_t num)
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHSPIRX);
-  HAL_Write32(ptr);
-  HAL_Write32(num);
-  HAL_IncCmdPointer(12);
+	HAL_Write32(EVE_ENC_CMD_FLASHSPIRX);
+	HAL_Write32(ptr);
+	HAL_Write32(num);
+	HAL_IncCmdPointer(12);
 }
 
 void EVE_CMD_FLASHATTACH()
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHATTACH);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_FLASHATTACH);
+	HAL_IncCmdPointer(4);
 }
 
 void EVE_CMD_FLASHDETATCH()
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHDETACH);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_FLASHDETACH);
+	HAL_IncCmdPointer(4);
 }
 
 
 void EVE_CMD_FLASHSPIDESEL()
 {
-  HAL_Write32(EVE_ENC_CMD_FLASHSPIDESEL);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_FLASHSPIDESEL);
+	HAL_IncCmdPointer(4);
 }
 
 void EVE_CMD_CLEARCACHE()
 {
-  HAL_Write32(EVE_ENC_CMD_CLEARCACHE);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_CLEARCACHE);
+	HAL_IncCmdPointer(4);
 }
 
 void EVE_CMD_INTRAMSHARED(uint32_t ptr)
 {
-  HAL_Write32(EVE_ENC_CMD_INT_RAMSHARED);
-  HAL_Write32(ptr);
-  HAL_IncCmdPointer(8);
+	HAL_Write32(EVE_ENC_CMD_INT_RAMSHARED);
+	HAL_Write32(ptr);
+	HAL_IncCmdPointer(8);
 }
 
 
 void EVE_CMD_SHA1(uint32_t src, uint32_t num, uint32_t hash)
 {
-  HAL_Write32(EVE_ENC_CMD_SHA1);
-  HAL_Write32(src);
-  HAL_Write32(num);
-  HAL_Write32(hash);
-  HAL_IncCmdPointer(16);
+	HAL_Write32(EVE_ENC_CMD_SHA1);
+	HAL_Write32(src);
+	HAL_Write32(num);
+	HAL_Write32(hash);
+	HAL_IncCmdPointer(16);
 }
 
 void EVE_CMD_RESETFONTS()
 {
-  HAL_Write32(EVE_ENC_CMD_RESETFONTS);
-  HAL_IncCmdPointer(4);
+	HAL_Write32(EVE_ENC_CMD_RESETFONTS);
+	HAL_IncCmdPointer(4);
 }
 
 void EVE_CMD_ANIMSTART(int32_t ch, uint32_t aoptr, uint32_t loop)
@@ -1510,9 +1507,9 @@ void EVE_CMD_ANIMSTART(int32_t ch, uint32_t aoptr, uint32_t loop)
 void EVE_CMD_GRADIENTA(int16_t x0, int16_t y0, uint32_t argb0, int16_t x1, int16_t y1, uint32_t argb1)
 {
 	HAL_Write32(EVE_ENC_CMD_GRADIENTA);
-	HAL_Write32(((uint32_t)y0<<16) |(x0 & 0xFFFF));
+	HAL_Write32(((uint32_t)y0 << 16) | (x0 & 0xFFFF));
 	HAL_Write32(argb0);
-	HAL_Write32(((uint32_t)y1<<16) |(x1 & 0xFFFF));
+	HAL_Write32(((uint32_t)y1 << 16) | (x1 & 0xFFFF));
 	HAL_Write32(argb1);
 	HAL_IncCmdPointer(20);
 }
@@ -1528,7 +1525,7 @@ void EVE_CMD_ANIMXY(int32_t ch, int16_t x, int16_t y)
 {
 	HAL_Write32(EVE_ENC_CMD_ANIMXY);
 	HAL_Write32(ch);
-	HAL_Write32(((uint32_t)y<<16) |(x & 0xFFFF));
+	HAL_Write32(((uint32_t)y << 16) | (x & 0xFFFF));
 	HAL_IncCmdPointer(12);
 }
 
@@ -1566,11 +1563,11 @@ void EVE_CMD_VIDEOSTARTF()
 
 #if defined (EVE4_ENABLE)
 
-void EVE_CMD_ANIMFRAMERAM(int16_t x, int16_t y, uint32_t aoptr, uint32_t frame )
+void EVE_CMD_ANIMFRAMERAM(int16_t x, int16_t y, uint32_t aoptr, uint32_t frame)
 {
 	//CMD_ANIMFRAME (0xFFFF FF5A)
 	HAL_Write32(EVE_ENC_CMD_ANIMFRAMERAM);
-	HAL_Write32(((uint32_t)y<<16) |(x & 0xFFFF));
+	HAL_Write32(((uint32_t)y << 16) | (x & 0xFFFF));
 	HAL_Write32(aoptr);
 	HAL_Write32(frame);
 	HAL_IncCmdPointer(16);
@@ -1607,8 +1604,8 @@ void EVE_CMD_CALIBRATESUB(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32
 {
 	//CMD_CALIBRATESUB(0xFFFF FF60)
 	HAL_Write32(EVE_ENC_CMD_CALIBRATESUB);
-	HAL_Write32(((uint32_t)y<<16) |(x & 0xFFFF));
-	HAL_Write32(((uint32_t)h<<16) |(w & 0xFFFF));
+	HAL_Write32(((uint32_t)y << 16) | (x & 0xFFFF));
+	HAL_Write32(((uint32_t)h << 16) | (w & 0xFFFF));
 	HAL_Write32(result);
 	HAL_IncCmdPointer(16);
 }
@@ -1680,7 +1677,7 @@ void EVE_CMD_FONTCACHEQUERY(uint32_t total, int32_t used)
 
 void EVE_CMD_GETIMAGE(uint32_t source, uint32_t fmt, uint32_t w, uint32_t h, uint32_t palette)
 {
-	 //CMD_GETIMAGE (0xFFFF FF64)
+	//CMD_GETIMAGE (0xFFFF FF64)
 	HAL_Write32(EVE_ENC_CMD_GETIMAGE);
 	HAL_Write32(source);
 	HAL_Write32(fmt);
@@ -1690,7 +1687,7 @@ void EVE_CMD_GETIMAGE(uint32_t source, uint32_t fmt, uint32_t w, uint32_t h, uin
 	HAL_IncCmdPointer(24);
 }
 
-void EVE_CMD_HSF(uint32_t w )
+void EVE_CMD_HSF(uint32_t w)
 {
 	//CMD_HSF (0xFFFF FF62)
 	HAL_Write32(EVE_ENC_CMD_HSF);

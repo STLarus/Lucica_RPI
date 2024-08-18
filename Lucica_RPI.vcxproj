@@ -57,7 +57,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SOURCE\EVE_API.c" />
-    <ClCompile Include="SOURCE\EVE_HAL.c" />
+    <ClCompile Include="SOURCE\EVE_HAL_Linux.c" />
+    <ClCompile Include="SOURCE\EVE_LINUX_RPI.c" />
     <ClCompile Include="SOURCE\Lucica_RPI.c" />
     <ClCompile Include="SOURCE\mongoose.c" />
   </ItemGroup>
@@ -75,5 +76,6 @@
     <ClInclude Include="INCLUDE\HAL.h" />
     <ClInclude Include="INCLUDE\MCU.h" />
     <ClInclude Include="INCLUDE\mongoose.h" />
+    <ClInclude Include="INCLUDE\Platform.h" />
   </ItemGroup>
 </Project>

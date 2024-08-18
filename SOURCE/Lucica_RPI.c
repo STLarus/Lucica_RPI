@@ -59,7 +59,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 
 
 
-int main(void) {
+int mainxx(void) {
 	int spiChannel = 1;  // SPI1
 	int speed = 1000000; // 1 MHz
 	int mode = 0;        // SPI mode 0
@@ -103,16 +103,16 @@ int main(void) {
 }
 
 
-void mainxx(void)
+void main(void)
 {
 
 	EVE_Init();
 	
 	
 	EVE_BEGIN(EVE_BEGIN_BITMAPS);
-	//EVE_VERTEX2F(200, 200);	//koordinate
-	//EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
-	//EVE_END();
+	EVE_VERTEX2F(200, 200);	//koordinate
+	EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
+	EVE_END();
 
 
 /*	struct mg_mgr mgr;
