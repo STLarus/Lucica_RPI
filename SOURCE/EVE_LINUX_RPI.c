@@ -74,8 +74,8 @@
     printf ("J8 Pin 22 - CS (GPIO25) - Note this is not the SPI0_CS0 pin\n");
     printf ("J8 Pin 18 - PD# (GPIO24) - Powerdown pin\n");
 */
-#define PIN_NUM_PD   24
-#define PIN_NUM_CS   25
+#define PIN_NUM_PD   14
+#define PIN_NUM_CS   16
 
 #define str(s) xstr(s)
 #define xstr(s) #s
@@ -87,7 +87,7 @@
 
 static int spiHandle = 0;
 
-const char* SPI_device = "/dev/spidev0.0";
+const char* SPI_device = "/dev/spidev1.2";
 const char* GPIO_export = "/sys/class/gpio/export";
 const char* GPIO_unexport = "/sys/class/gpio/unexport";
 const char* GPIO_pd_dir = "/sys/class/gpio/gpio" str(PIN_NUM_PD) "/direction";
