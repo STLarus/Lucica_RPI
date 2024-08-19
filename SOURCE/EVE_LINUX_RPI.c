@@ -87,7 +87,7 @@
 
 static int spiHandle = 0;
 
-const char* SPI_device = "/dev/spidev1.2";
+const char* SPI_device = "/dev/spidev0.1";
 const char* GPIO_export = "/sys/class/gpio/export";
 const char* GPIO_unexport = "/sys/class/gpio/unexport";
 const char* GPIO_pd_dir = "/sys/class/gpio/gpio" str(PIN_NUM_PD) "/direction";
