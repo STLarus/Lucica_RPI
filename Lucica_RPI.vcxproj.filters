@@ -35,7 +35,7 @@
     <ClCompile Include="SOURCE\mongoose.c">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="SOURCE\EVE_HAL_Linux.c">
+    <ClCompile Include="SOURCE\EVE_HAL.c">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="SOURCE\EVE_LINUX_RPI.c">

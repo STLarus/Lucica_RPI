@@ -3,9 +3,16 @@
 #include "../INCLUDE/mongoose.h"
 #include <stdio.h>
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
 
 #define BOT_TOKEN   "jure"
 #define CHAT_ID 12345678
+
+#define SPIport	1
+#define SPIchannel	2
+#define SPIspeed	1000000
+#define SPImode	0
+
 
 static const char* s_url = "https://api.telegram.org/" BOT_TOKEN "/sendMessage";
 #define MESSAGE "Oh, someone was able to press that tiny button !"
@@ -59,24 +66,34 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 
 
 
-int mainxx(void) {
+int main(void) {
 	int spiChannel = 1;  // SPI1
 	int speed = 1000000; // 1 MHz
 	int mode = 0;        // SPI mode 0
 	int csPin = 16;      // GPIO16 (pin 36), ručno kontroliran CS
 
+	if (wiringPiSetup() == -1)
+	{
+		printf("WiringPI setup failed! \n");
+		return 1;
+	}
 	// Inicijalizacija WiringPi GPIO sistema
 	if (wiringPiSetupGpio() == -1) {
 		fprintf(stderr, "Failed to initialize WiringPi.\n");
 		return 1;
 	}
-
+	
+	
+	
 	// Postavljanje GPIO16 (CS) kao izlaznog pina
 	pinMode(csPin, OUTPUT);
 	digitalWrite(csPin, HIGH);  // Postavite CS na HIGH
 
 	// Inicijalizacija SPI1 bez hardverskog upravljanja CS-om
-	int fd = wiringPiSPISetupMode(spiChannel, speed, mode);
+	//int fd = wiringPiSPISetupMode(spiChannel, speed, mode);
+	//int wiringPiSPIxSetupMode(const int number, const int channel, const int speed, const int mode)
+
+	int fd = wiringPiSPIxSetupMode(SPIport, SPIchannel, SPIspeed, SPImode);
 	if (fd < 0) {
 		fprintf(stderr, "Failed to initialize SPI1.\n");
 		return 1;
@@ -86,7 +103,7 @@ int mainxx(void) {
 	unsigned char dataToSend[2] = { 0xAB, 0xCD };
 
 	// Ručno postavljanje CS na LOW prije slanja podataka
-	digitalWrite(csPin, LOW);
+	/*digitalWrite(csPin, LOW);
 
 	// Slanje podataka preko SPI1
 	if (wiringPiSPIDataRW(spiChannel, dataToSend, sizeof(dataToSend)) == -1) {
@@ -97,13 +114,23 @@ int mainxx(void) {
 	// Ručno postavljanje CS na HIGH nakon slanja podataka
 	digitalWrite(csPin, HIGH);
 
-	printf("Data sent: 0x%X 0x%X\n", dataToSend[0], dataToSend[1]);
+	printf("Data sent: 0x%X 0x%X\n", dataToSend[0], dataToSend[1]);*/
+	
+	while (1)
+	{
+		digitalWrite(csPin, LOW);
+		wiringPiSPIxDataRW(SPIport, SPIchannel, dataToSend, sizeof(dataToSend));
+
+		//wiringPiSPIDataRW(spiChannel, dataToSend, sizeof(dataToSend));
+		digitalWrite(csPin, HIGH);
+		usleep(20 * 1000);
+	}
 
 	return 0;
 }
 
 
-void main(void)
+void mainxxx(void)
 {
 
 	EVE_Init();

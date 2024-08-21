@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
-    <ToolchainVersion>10.2.1/10.1/r2</ToolchainVersion>
+    <ToolchainVersion>12.2.0/13.1/r1</ToolchainVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
@@ -57,7 +57,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SOURCE\EVE_API.c" />
-    <ClCompile Include="SOURCE\EVE_HAL_Linux.c" />
+    <ClCompile Include="SOURCE\EVE_HAL.c" />
     <ClCompile Include="SOURCE\EVE_LINUX_RPI.c" />
     <ClCompile Include="SOURCE\Lucica_RPI.c" />
     <ClCompile Include="SOURCE\mongoose.c" />

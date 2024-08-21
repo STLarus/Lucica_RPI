@@ -50,8 +50,8 @@
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 #include <stdarg.h>
-#include "../include/EVE.h"
-#include "../include/HAL.h"
+#include "../INCLUDE/EVE.h"
+#include "../INCLUDE/HAL.h"
 
   // Set beginning of graphics command memory
   //static uint32_t RAMCommandBuffer = EVE_RAM_CMD;
