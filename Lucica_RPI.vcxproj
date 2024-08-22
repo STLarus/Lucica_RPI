@@ -58,7 +58,7 @@
   <ItemGroup>
     <ClCompile Include="SOURCE\EVE_API.c" />
     <ClCompile Include="SOURCE\EVE_HAL.c" />
-    <ClCompile Include="SOURCE\EVE_LINUX_RPI.c" />
+    <ClCompile Include="SOURCE\EVE_MCU_RPI.c" />
     <ClCompile Include="SOURCE\Lucica_RPI.c" />
     <ClCompile Include="SOURCE\mongoose.c" />
   </ItemGroup>
