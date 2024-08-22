@@ -117,7 +117,7 @@ void HAL_EVE_Init(void)
 #endif
 
 	// This function will not return unless an EVE device is present.
-	MCU_Setup();
+	//MCU_Setup();
 }
 
 // --------------------- Chip Select line ----------------------------------

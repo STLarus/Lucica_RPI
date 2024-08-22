@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 #include <stdio.h>
+#include <endian.h>
 
 #include "../INCLUDE/MCU.h"
 #include "../INCLUDE/EVE_config.h"
@@ -9,9 +10,9 @@
 #include <wiringPiSPI.h>
 
 
-#define PD_PIN	1
-#define CS_PIN	2	//pin na koji je spojen CS
-#define CS_PORT	3	//chip celect pin (lažni je pin, na njega ništa nije spojeno. Koristi se da bi SPI1 mogao radiit sa ručnom kontrolom CS pina
+#define PD_PIN	15	//GPIO14
+#define CS_PIN	27	//GPIO16	//pin na koji je spojen CS
+#define CS_PORT	28	//GPIO12	//chip celect pin (lažni je pin, na njega ništa nije spojeno. Koristi se da bi SPI1 mogao radiit sa ručnom kontrolom CS pina
 #define SPI_CHANNEL	1
 #define SPI_SPEED	1000000
 #define SPI_MODE	0
@@ -24,7 +25,9 @@ void MCU_Init(void)
 		printf("WiringPI setup failure \n");
 		return 1;
 	}
-	wiringPIGpio();
+	wiringPiSetupGpio();
+	pinMode(CS_PIN , OUTPUT);
+	digitalWrite(CS_PIN, HIGH);
 	pinMode(PD_PIN, OUTPUT);
 	int fd1 = wiringPiSPIxSetupMode(SPI_CHANNEL, CS_PORT, SPI_SPEED, SPI_MODE);
 	if (fd1 == -1)
@@ -151,41 +154,41 @@ void MCU_Delay_500ms(void)
 // Use toolchain defined functions.
 uint16_t MCU_htobe16(uint16_t h)
 {
-	return __bswap16(h);
+	return htobe16(h);
 }
 
 uint32_t MCU_htobe32(uint32_t h)
 {
-	return __bswap32(h);
+	return htobe32(h);
 }
 
 uint16_t MCU_htole16(uint16_t h)
 {
-	return h;
+	return htole16(h);
 }
 
 uint32_t MCU_htole32(uint32_t h)
 {
-	return h;
+	return htole32(h);
 }
 
 uint16_t MCU_be16toh(uint16_t h)
 {
-	return __bswap16(h);
+	return be16toh(h);
 }
 
 uint32_t MCU_be32toh(uint32_t h)
 {
-	return __bswap32(h);
+	return be32toh(h);;
 }
 
 uint16_t MCU_le16toh(uint16_t h)
 {
-	return h;
+	return le16toh(h);
 }
 
 uint32_t MCU_le32toh(uint32_t h)
 {
-	return h;
+	return le32toh(h);
 }
 

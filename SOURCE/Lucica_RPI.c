@@ -66,7 +66,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data) {
 
 
 
-int main(void) {
+int mainxxx(void) {
 	int spiChannel = 1;  // SPI1
 	int speed = 1000000; // 1 MHz
 	int mode = 0;        // SPI mode 0
@@ -130,7 +130,7 @@ int main(void) {
 }
 
 
-void mainxxx(void)
+void main(void)
 {
 
 	EVE_Init();
