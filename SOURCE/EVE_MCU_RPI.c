@@ -12,7 +12,7 @@
 
 #define PD_PIN	15	//GPIO14
 #define CS_PIN	27	//GPIO16	//pin na koji je spojen CS
-#define CS_PORT	28	//GPIO12	//chip celect pin (lažni je pin, na njega ništa nije spojeno. Koristi se da bi SPI1 mogao radiit sa ručnom kontrolom CS pina
+#define CS_PORT	0	//definiran je SPI1 CS0, ovo je lažni CS koji se ne koristi, definira se na slobodnom portu
 #define SPI_CHANNEL	1
 #define SPI_SPEED	1000000
 #define SPI_MODE	0
