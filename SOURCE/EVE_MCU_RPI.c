@@ -25,7 +25,7 @@ void MCU_Init(void)
 		printf("WiringPI setup failure \n");
 		return 1;
 	}
-	wiringPiSetupGpio();
+	//wiringPiSetupGpio();
 	pinMode(CS_PIN , OUTPUT);
 	digitalWrite(CS_PIN, HIGH);
 	pinMode(PD_PIN, OUTPUT);
@@ -35,6 +35,8 @@ void MCU_Init(void)
 		printf("SPI1 setup failure \n");
 		return 1;
 	}
+
+	//jebiga();
 }
 
 

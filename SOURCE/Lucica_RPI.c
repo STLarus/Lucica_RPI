@@ -133,7 +133,7 @@ int mainxxx(void) {
 void main(void)
 {
 
-	EVE_Init();
+ 	EVE_Init();
 	
 	
 	EVE_BEGIN(EVE_BEGIN_BITMAPS);

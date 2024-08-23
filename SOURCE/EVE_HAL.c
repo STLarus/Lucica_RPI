@@ -153,7 +153,9 @@ void HAL_SetReadAddress(uint32_t address)
 	// Send three bytes of a register address which has to be subsequently read.
 	// Ignore return values as this is an SPI write only.
 	// Send high byte of address with 'read' bits set.
-	MCU_SPIWrite32(MCU_htobe32((address << 8) | (0UL << 31)));
+	//MCU_SPIWrite32(MCU_htobe32((address << 8) | (0UL << 31)));
+	address = address << 8;	//ovo generira 24 bitnu adresu + dummy byte
+	MCU_SPIWrite32(address);
 }
 
 // ------------------------ Send a block of data --------------------------
@@ -403,6 +405,17 @@ uint16_t HAL_CheckCmdFreeSpace(void)
 	Freespace = (EVE_RAM_CMD_SIZE - 4) - Fullness;
 
 	return Freespace;
+}
+
+
+void jebiga(void)
+{
+	while (1)
+	{
+		HAL_MemRead8(EVE_REG_ID);
+		usleep(10000);
+	}
+
 }
 
 #endif // __linux__

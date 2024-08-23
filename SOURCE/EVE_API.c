@@ -67,8 +67,7 @@ void EVE_Init(void)
 
 	HAL_EVE_Init();
 	
-	while(1)
-		HAL_MemWrite16(EVE_REG_HSIZE, EVE_DISP_WIDTH);
+	HAL_MemWrite16(EVE_REG_HSIZE, EVE_DISP_WIDTH);
 
 	// ------------------------- Display settings ------------------------------
 
