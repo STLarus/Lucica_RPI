@@ -52,6 +52,14 @@
 
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 
+#define PD_PIN	15	//GPIO14
+#define CS_PIN	27	//GPIO16	//pin na koji je spojen CS
+#define CS_PORT	0	//definiran je SPI1 CS0, ovo je lažni CS koji se ne koristi, definira se na slobodnom portu
+#define SPI_CHANNEL	1
+#define SPI_SPEED	1000000
+#define SPI_MODE	0
+
+
   /**
    @brief MCU specific initialisation
    @details Must contain any MCU-specific initialisation. This will typically be
