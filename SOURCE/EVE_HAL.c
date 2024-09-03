@@ -3,18 +3,22 @@
  */
 
 
-  /* Only compile for non-linux platforms or when MPSSE is being used. */
+ /* Only compile for non-linux platforms or when MPSSE is being used. */
 #if !defined(USE_LINUX_SPI_DEV) || defined(USE_MPSSE)
 
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 
-
+#include "../INCLUDE/EVE_config.h"
+#include "../INCLUDE/FT8xx.h"
 #include "../INCLUDE/HAL.h"
 #include "../INCLUDE/MCU.h"
 #include "../INCLUDE/EVE_config.h"
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
+
+#define CS_LOW()	digitalWrite(CS_PIN, LOW)
+#define CS_HIGH()	digitalWrite(CS_PIN, HIGH)
 
 
 // Used to navigate command ring buffer
@@ -104,7 +108,12 @@ void HAL_SetWriteAddress(uint32_t address)
 	// Send three bytes of a register address which has to be subsequently
 	// written. Ignore return values as this is an SPI write only.
 	// Send high byte of address with 'write' bits set.
-	MCU_SPIWrite24(MCU_htobe32((address << 8) | (1UL << 31)));
+	uint8_t data[4] = { 0,0,0,0 };
+	data[0] = (uint8_t)(address >> 16);
+	data[0] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 3);
 }
 
 // ------------------ Send FT81x register address for reading ------------------
@@ -113,34 +122,42 @@ void HAL_SetReadAddress(uint32_t address)
 	// Send three bytes of a register address which has to be subsequently read.
 	// Ignore return values as this is an SPI write only.
 	// Send high byte of address with 'read' bits set.
-	//MCU_SPIWrite32(MCU_htobe32((address << 8) | (0UL << 31)));
-	address = address << 8;	//ovo generira 24 bitnu adresu + dummy byte
-	MCU_SPIWrite32(address);
+	uint8_t data[4] = { 0,0,0,0 };
+	data[0] = (uint8_t)(address >> 16);
+	data[0] = data[0] & 0x3F;	//???? da li ovo treba ?
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 3);
 }
 
 // ------------------------ Send a block of data --------------------------
+
 void HAL_Write(const uint8_t* buffer, uint32_t length)
 {
 	// Send multiple bytes of data after previously sending address. Ignore return
 	// values as this is an SPI write only. Data must be the correct endianess
 	// for the SPI bus.
-	MCU_SPIWrite(buffer, length);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, buffer, length);
 }
 
 // ------------------------ Send a 32-bit data value --------------------------
 void HAL_Write32(uint32_t val32)
 {
-	// Send four bytes of data after previously sending address. Ignore return
-	// values as this is an SPI write only.
-	MCU_SPIWrite32(MCU_htole32(val32));
+	uint8_t data[4] = { 0,0,0,0 };
+	data[3] = (uint8_t)(val32 >> 24);
+	data[2] = (uint8_t)(val32 >> 16);
+	data[1] = (uint8_t)(val32 >> 8);
+	data[0] = (uint8_t)(val32);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
 }
 
 // ------------------------ Send a 16-bit data value --------------------------
 void HAL_Write16(uint16_t val16)
 {
-	// Send two bytes of data after previously sending address. Ignore return
-	// values as this is an SPI write only.
-	MCU_SPIWrite16(MCU_htole16(val16));
+	uint8_t data[4] = { 0,0,0,0 };
+	data[1] = (uint8_t)(val16 >> 8);
+	data[0] = (uint8_t)(val16);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 2);
 }
 
 // ------------------------ Send an 8-bit data value ---------------------------
@@ -148,7 +165,7 @@ void HAL_Write8(uint8_t val8)
 {
 	// Send one byte of data after previously sending address. Ignore return
 	// values as this is an SPI write only.
-	MCU_SPIWrite8(val8);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, val8, 1);
 }
 
 // ------------------------ Read a 32-bit data value --------------------------
@@ -156,40 +173,45 @@ uint32_t HAL_Read32(void)
 {
 	// Read 4 bytes from a register has been previously addressed. Send dummy
 	// 00 bytes as only the incoming value is important.
+
+	uint8_t buf[4] = { 0,0,0,0 };
 	uint32_t val32;
 
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, buf, 4);
+
 	// Read low byte of data first.
-	val32 = MCU_SPIRead32();
+	val32 = buf[0] + ((uint32_t)buf[1] << 8) + ((uint32_t)buf[2] << 16) + ((uint32_t)buf[3] << 24);
 
 	// Return combined 32-bit value
-	return MCU_le32toh(val32);
+	return val32;
 }
 
 // ------------------------ Read a 16-bit data value ---------------------------
 uint16_t HAL_Read16(void)
 {
-	// Read 2 bytes from a register has been previously addressed. Send dummy
+	// Read 4 bytes from a register has been previously addressed. Send dummy
 	// 00 bytes as only the incoming value is important.
+
+	uint8_t buf[4] = { 0,0,0,0 };
 	uint16_t val16;
 
-	// Read low byte of data first.
-	val16 = MCU_SPIRead16();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, buf, 2);
 
-	// Return combined 16-bit value
-	return MCU_le16toh(val16);
+	// Read low byte of data first.
+	val16 = buf[0] + ((uint16_t)buf[1] << 8);
+
+	// Return combined 32-bit value
+	return val16;
 }
 
 // ------------------------ Read an 8-bit data value ---------------------------
 uint8_t HAL_Read8(void)
 {
-	// Read 1 byte from a register has been previously addressed. Send dummy
-	// 00 byte as only the incoming value is important.
-	uint8_t val8;
+	uint8_t buf[4] = { 0,0,0,0 };
 
-	val8 = MCU_SPIRead8();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, buf, 1);
 
-	// Return 8-bit value read
-	return val8;
+	return buf[0];
 }
 
 // ################# COMBINED ADDRESSING AND DATA FUNCTIONS ####################
@@ -201,40 +223,50 @@ uint8_t HAL_Read8(void)
 // -------------- Write a 32-bit value to specified address --------------------
 void HAL_MemWrite32(uint32_t address, uint32_t val32)
 {
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be written
-	HAL_SetWriteAddress(address);
-	// Send the data value
-	HAL_Write32(val32);
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[6] = (uint8_t)(address >> 16);
+	data[6] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[5] = (uint8_t)(address >> 8);
+	data[4] = (uint8_t)(address);
+	data[3] = (uint8_t)(val32 >> 24);
+	data[2] = (uint8_t)(val32 >> 16);
+	data[1] = (uint8_t)(val32 >> 8);
+	data[0] = (uint8_t)(val32);
+
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 7);
+	CS_HIGH();
 }
 
 // -------------- Write a 16-bit value to specified address --------------------
 void HAL_MemWrite16(uint32_t address, uint16_t val16)
 {
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be written
-	HAL_SetWriteAddress(address);
-	// Send the data value
-	HAL_Write16(val16);
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[4] = (uint8_t)(address >> 16);
+	data[4] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[3] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[1] = (uint8_t)(val16 >> 8);
+	data[0] = (uint8_t)(val16);
+
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
+	CS_HIGH();
 }
 
 // -------------- Write an 8-bit value to specified address --------------------
 void HAL_MemWrite8(uint32_t address, uint8_t val8)
 {
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be written
-	HAL_SetWriteAddress(address);
-	// Send the data value
-	HAL_Write8(val8);
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[3] = (uint8_t)(address >> 16);
+	data[3] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[2] = (uint8_t)(address >> 8);
+	data[1] = (uint8_t)(address);
+	data[0] = (uint8_t)(val8);
+
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
+	CS_HIGH();
 }
 
 // -------------- Read a 32-bit value from specified address --------------------
@@ -242,16 +274,17 @@ uint32_t HAL_MemRead32(uint32_t address)
 {
 	uint32_t val32;
 
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be read
-	HAL_SetReadAddress(address);
-	// Read the data value
-	val32 = HAL_Read32();
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[6] = (uint8_t)(address >> 16);
+	data[6] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[5] = (uint8_t)(address >> 8);
+	data[4] = (uint8_t)(address);
+	
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 7);
+	CS_HIGH();
 
-	// Return 32-bit value read
+	val32 = data[0] + ((uint32_t)data[1] << 8) + ((uint32_t)data[2] << 16) + ((uint32_t)data[3] << 24);
 	return val32;
 }
 // -------------- Read a 16-bit value from specified address --------------------
@@ -259,16 +292,17 @@ uint16_t HAL_MemRead16(uint32_t address)
 {
 	uint16_t val16;
 
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be read
-	HAL_SetReadAddress(address);
-	// Read the data value
-	val16 = HAL_Read16();
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[4] = (uint8_t)(address >> 16);
+	data[4] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[3] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
 
-	// Return 16-bit value read
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
+	CS_HIGH();
+
+	val16 = data[0] + ((uint16_t)data[1] << 8);
 	return val16;
 }
 // -------------- Read an 8-bit value from specified address --------------------
@@ -276,32 +310,31 @@ uint8_t HAL_MemRead8(uint32_t address)
 {
 	uint8_t val8;
 
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send address to be read
-	HAL_SetReadAddress(address);
-	// Read the data value
-	val8 = HAL_Read8();
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
+	data[3] = (uint8_t)(address >> 16);
+	data[3] = data[0] | 0x80;	//???? da li ovo treba ?
+	data[2] = (uint8_t)(address >> 8);
+	data[1] = (uint8_t)(address);
 
-	// Return 8-bit value read
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
+	CS_HIGH();
+
+	val8 = data[0];
 	return val8;
 }
 // ############################# HOST COMMANDS #################################
 // -------------------------- Write a host command -----------------------------
 void HAL_HostCmdWrite(uint8_t cmd, uint8_t param)
 {
-	// CS low begins the SPI transfer
-	HAL_ChipSelect(1);
-	// Send command
-	MCU_SPIWrite8(cmd);
-	// followed by parameter
-	MCU_SPIWrite8(param);
-	// and a dummy 00 byte
-	MCU_SPIWrite8(0x00);
-	// CS high terminates the SPI transfer
-	HAL_ChipSelect(0);
+	uint8_t data[4] = { 0,0,0,0};
+	data[2] = cmd;
+	data[1] = param;
+	data[0] = 0;	// DUMMY BYTE;
+	CS_LOW();
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 3);
+	CS_HIGH();
+
 }
 // ######################## SUPPORTING FUNCTIONS ###############################
 

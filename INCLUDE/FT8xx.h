@@ -75,6 +75,7 @@
 #undef EVE3_ENABLE
 #undef EVE4_ENABLE
 
+
 #if (FT8XX_TYPE == FT800)
 #define EVE1_ENABLE
 
