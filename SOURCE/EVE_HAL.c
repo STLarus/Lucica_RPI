@@ -274,17 +274,17 @@ uint32_t HAL_MemRead32(uint32_t address)
 {
 	uint32_t val32;
 
-	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
-	data[6] = (uint8_t)(address >> 16);
-	data[6] = data[0] | 0x80;	//???? da li ovo treba ?
-	data[5] = (uint8_t)(address >> 8);
-	data[4] = (uint8_t)(address);
+	uint8_t data[10] = { 0,0,0,0,0,0,0,0,0,0 };
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[3] = 0; //DUMMY BYTE
 	
 	CS_LOW();
-	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 7);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 8);
 	CS_HIGH();
 
-	val32 = data[0] + ((uint32_t)data[1] << 8) + ((uint32_t)data[2] << 16) + ((uint32_t)data[3] << 24);
+	val32 = data[7] + ((uint32_t)data[6] << 8) + ((uint32_t)data[5] << 16) + ((uint32_t)data[4] << 24);
 	return val32;
 }
 // -------------- Read a 16-bit value from specified address --------------------
@@ -292,17 +292,18 @@ uint16_t HAL_MemRead16(uint32_t address)
 {
 	uint16_t val16;
 
-	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
-	data[4] = (uint8_t)(address >> 16);
-	data[4] = data[0] | 0x80;	//???? da li ovo treba ?
-	data[3] = (uint8_t)(address >> 8);
+	
+	uint8_t data[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
 	data[2] = (uint8_t)(address);
+	data[3] = 0; //DUMMY BYTE
 
 	CS_LOW();
-	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 6);
 	CS_HIGH();
 
-	val16 = data[0] + ((uint16_t)data[1] << 8);
+	val16 = data[5] + ((uint16_t)data[4] << 8);
 	return val16;
 }
 // -------------- Read an 8-bit value from specified address --------------------
@@ -311,16 +312,16 @@ uint8_t HAL_MemRead8(uint32_t address)
 	uint8_t val8;
 
 	uint8_t data[8] = { 0,0,0,0,0,0,0,0 };
-	data[3] = (uint8_t)(address >> 16);
-	data[3] = data[0] | 0x80;	//???? da li ovo treba ?
-	data[2] = (uint8_t)(address >> 8);
-	data[1] = (uint8_t)(address);
+	data[0] = (uint8_t)(address >> 16);
+	data[1] = (uint8_t)(address >> 8);
+	data[2] = (uint8_t)(address);
+	data[3] = 0;	//DUMMY BYTE
 
 	CS_LOW();
-	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 4);
+	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 5);
 	CS_HIGH();
 
-	val8 = data[0];
+	val8 = data[4];
 	return val8;
 }
 // ############################# HOST COMMANDS #################################
@@ -328,9 +329,9 @@ uint8_t HAL_MemRead8(uint32_t address)
 void HAL_HostCmdWrite(uint8_t cmd, uint8_t param)
 {
 	uint8_t data[4] = { 0,0,0,0};
-	data[2] = cmd;
+	data[0] = cmd;
 	data[1] = param;
-	data[0] = 0;	// DUMMY BYTE;
+	data[2] = 0;	// DUMMY BYTE;
 	CS_LOW();
 	wiringPiSPIxDataRW(SPI_CHANNEL, CS_PORT, data, 3);
 	CS_HIGH();

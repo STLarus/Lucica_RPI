@@ -17,7 +17,7 @@ void MCU_Init(void)
 	if (wiringPiSetup() == -1)
 	{
 		printf("WiringPI setup failure \n");
-		return 1;
+		
 	}
 	//wiringPiSetupGpio();
 	pinMode(CS_PIN , OUTPUT);
@@ -27,10 +27,10 @@ void MCU_Init(void)
 	if (fd1 == -1)
 	{
 		printf("SPI1 setup failure \n");
-		return 1;
+		
 	}
 
-	//jebiga();
+
 }
 
 
