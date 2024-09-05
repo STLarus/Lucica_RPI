@@ -138,6 +138,10 @@ void EVE_Init(void)
 	HAL_MemWrite16(EVE_REG_SOUND, 0x6000);
 
 	// --------------------- Clear screen ready to start -----------------------
+	
+	
+	
+	
 	EVE_LIB_BeginCoProList();
 	EVE_CMD_DLSTART();
 	EVE_CLEAR_COLOR_RGB(0, 0, 0);

@@ -13,7 +13,7 @@
   // required. This must be called prior to including FT8xx.h.
   // "#define FT8XX_TYPE BT817" is equivelant to having "#define EVE4_ENABLE".
 #ifndef FT8XX_TYPE
-#define FT8XX_TYPE FT813
+#define FT8XX_TYPE FT811
 #endif
 
 // Definitions used for target display resolution selection
