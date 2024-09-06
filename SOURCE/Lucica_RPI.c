@@ -12,6 +12,9 @@
 #define SPIchannel	2
 #define SPIspeed	1000000
 #define SPImode	0
+#define BITMAP_ADDRESS 0x100000  // Početna adresa u RAM_G memoriji
+#define BITMAP_WIDTH   100       // Širina bitmape
+#define BITMAP_HEIGHT  100       // Visina bitmape
 
 
 static const char* s_url = "https://api.telegram.org/" BOT_TOKEN "/sendMessage";
@@ -129,17 +132,68 @@ int mainxxx(void) {
 	return 0;
 }
 
+void krug(void)
+{
+	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
+	EVE_CMD_DLSTART(); // Početak display liste
+	EVE_CLEAR_COLOR_RGB(50, 100, 50); // Postavljanje crne pozadine
+	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
+
+	EVE_COLOR_RGB(255, 255, 255); // Postavljanje boje za crtanje (bela)
+	EVE_BEGIN(EVE_BEGIN_POINTS); // Počinje crtanje tačaka (koje se mogu koristiti kao krugovi)
+	EVE_POINT_SIZE(60 * 16); // Postavljanje veličine kruga (60 piksela, veličina se daje u 1/16 piksela)
+	EVE_VERTEX2F(240 * 16, 136 * 16); // Postavljanje koordinata kruga (240, 136) u 1/16 piksela
+	EVE_END(); // Završava crtanje tačaka
+
+	EVE_DISPLAY(); // Prikaz display liste
+	EVE_CMD_SWAP(); // Zamena frame buffer-a
+	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
+	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se sve komande ne izvrše
+	
+}
+
+
+
+// Funkcija za učitavanje bitmape u RAM_G memoriju
+void loadBitmapToFT813(const uint8_t* bitmapData, uint32_t size) {
+	EVE_LIB_WriteDataToRAMG(BITMAP_ADDRESS, bitmapData, size); // Učitavanje bitmape
+}
+
+void drawBitmap() {
+	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
+	EVE_CMD_DLSTART(); // Početak display liste
+	EVE_CLEAR_COLOR_RGB(0, 0, 0); // Postavljanje crne pozadine
+	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
+
+	EVE_BEGIN(EVE_BEGIN_BITMAPS); // Počinje crtanje bitmapa
+	EVE_BITMAP_SOURCE(BITMAP_ADDRESS); // Postavljanje adrese bitmape u RAM_G
+	EVE_BITMAP_LAYOUT(EVE_FORMAT_RGB565, BITMAP_WIDTH * 2, BITMAP_HEIGHT); // Format bitmape (RGB565, širina u bajtovima)
+	EVE_BITMAP_SIZE(EVE_FILTER_NEAREST, EVE_WRAP_BORDER, EVE_WRAP_BORDER, BITMAP_WIDTH, BITMAP_HEIGHT); // Postavljanje veličine
+
+	EVE_VERTEX2F(100 * 16, 50 * 16); // Pozicija bitmape (x=100, y=50) u 1/16 piksela
+
+	EVE_END(); // Završava crtanje
+	EVE_DISPLAY(); // Prikaz display liste
+	EVE_CMD_SWAP(); // Zamena frame buffer-a
+	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
+	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
+}
+
 
 void main(void)
 {
-
+const uint8_t* bitmapData; // Ovdje bi bila tvoja bitmapa u formatu niza podataka
+	uint32_t bitmapSize = BITMAP_WIDTH * BITMAP_HEIGHT * 2; // Veličina bitmape (RGB565 format koristi 2 bajta po pikselu)
  	EVE_Init();
 	
+	//krug();
 	
-	EVE_BEGIN(EVE_BEGIN_BITMAPS);
-	EVE_VERTEX2F(200, 200);	//koordinate
-	EVE_COLOR_RGB(211, 32, 170);	//neka ljubičasta
-	EVE_END();
+	
+
+	loadBitmapToFT813(bitmapData, bitmapSize); // Učitaj bitmapu
+	drawBitmap(); // Nacrtaj bitmapu na ekranu
+	
+	int jure = 5;
 
 
 /*	struct mg_mgr mgr;
