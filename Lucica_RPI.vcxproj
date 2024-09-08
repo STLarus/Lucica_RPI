@@ -77,5 +77,6 @@
     <ClInclude Include="INCLUDE\MCU.h" />
     <ClInclude Include="INCLUDE\mongoose.h" />
     <ClInclude Include="INCLUDE\Platform.h" />
+    <ClInclude Include="PICTURE\Rabac.h" />
   </ItemGroup>
 </Project>

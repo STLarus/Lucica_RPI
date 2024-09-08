@@ -237,6 +237,7 @@ void EVE_LIB_WriteDataToRAMG(const uint8_t* ImgData, uint32_t DataSize, uint32_t
 		HAL_Write32(*(uint32_t*)ImgData);
 		ImgData += 4;
 		DataSize -= 4;
+		
 	}
 
 	// End SPI transaction
