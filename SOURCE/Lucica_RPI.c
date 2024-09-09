@@ -162,55 +162,48 @@ void loadBitmapToFT813(const uint8_t* bitmapData, uint32_t size) {
 	//EVE_LIB_WriteDataToRAMG(BITMAP_ADDRESS, bitmapData, size); // Učitavanje bitmape
 	 EVE_LIB_WriteDataToRAMG(bitmapData, size,BITMAP_ADDRESS); // Učitavanje bitmape
 }
-
-void drawBitmap() {
+void drawButton() {
 	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
 	EVE_CMD_DLSTART(); // Početak display liste
-	EVE_CLEAR_COLOR_RGB(0, 0, 0); // Postavljanje crne pozadine
+	EVE_CLEAR_COLOR_RGB(100, 100,100); // Postavljanje crne pozadine
 	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
 
-	EVE_BEGIN(EVE_BEGIN_BITMAPS); // Počinje crtanje bitmapa
-	EVE_BITMAP_SOURCE(BITMAP_ADDRESS); // Postavljanje adrese bitmape u RAM_G
-	EVE_BITMAP_LAYOUT(EVE_FORMAT_RGB565, BITMAP_WIDTH * 2, BITMAP_HEIGHT); // Format bitmape (RGB565, širina u bajtovima)
-	EVE_BITMAP_SIZE(EVE_FILTER_NEAREST, EVE_WRAP_BORDER, EVE_WRAP_BORDER, BITMAP_WIDTH, BITMAP_HEIGHT); // Postavljanje veličine
+	// Crtanje dugmeta
+	EVE_CMD_BUTTON(150, 100, 100, 40, 28, 110, "Broj 1!"); // (x, y, širina, visina, font, opcije, tekst)
+	EVE_CMD_BUTTON(150, 200, 100, 40, 28, 0, "Broj 2!"); // (x, y, širina, visina, font, opcije, tekst)
 
-	EVE_VERTEX2F(100 * 16, 50 * 16); // Pozicija bitmape (x=100, y=50) u 1/16 piksela
 
-	EVE_END(); // Završava crtanje
 	EVE_DISPLAY(); // Prikaz display liste
 	EVE_CMD_SWAP(); // Zamena frame buffer-a
 	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
 	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
 }
 
-void drawJPEG() {
-	EVE_LIB_BeginCoProList();        // Početak CoPro liste komandi
-	EVE_CMD_DLSTART();               // Početak display liste
-	EVE_CLEAR_COLOR_RGB(0, 0, 0);    // Postavljanje crne pozadine
-	EVE_CLEAR(1, 1, 1);              // Čišćenje ekrana
+void drawButtonsAndTime(const char* timeString) {
+	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
+	EVE_CMD_DLSTART(); // Početak nove display liste
+	EVE_CLEAR_COLOR_RGB(100, 100, 100); // Postavljanje pozadine
+	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
 
-	// Komanda za učitavanje i dekodiranje JPEG slike
-	EVE_CMD_LOADIMAGE(JPEG_ADDRESS, 0);  // Učitavanje slike sa JPEG_ADDRESS u RAM_G
-	EVE_LIB_EndCoProList();          // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty();       // Čekanje dok se komande izvrše
+	// Crtanje 6 dugmadi
+	EVE_CMD_BUTTON(50, 50, 100, 40, 28, 0, "Dugme 1");
+	EVE_CMD_BUTTON(50, 100, 100, 40, 28, 0, "Dugme 2");
+	EVE_CMD_BUTTON(50, 150, 100, 40, 28, 0, "Dugme 3");
+	EVE_CMD_BUTTON(200, 50, 100, 40, 28, 0, "Dugme 4");
+	EVE_CMD_BUTTON(200, 100, 100, 40, 28, 0, "Dugme 5");
+	EVE_CMD_BUTTON(200, 150, 100, 40, 28, 0, "Dugme 6");
 
-	// Sada kada je JPEG dekodiran, možemo prikazati sliku
-	EVE_LIB_BeginCoProList();        // Početak nove CoPro liste komandi
-	EVE_CMD_DLSTART();               // Početak display liste
+	// Dodavanje vremena (sat) na ekran
+	EVE_CMD_TEXT(150, 250, 28, EVE_OPT_CENTER, timeString); // Prikaz sata
 
-	EVE_BEGIN(EVE_BEGIN_BITMAPS);    // Počinje crtanje bitmapa
-	EVE_BITMAP_SOURCE(JPEG_ADDRESS); // Postavljanje adrese u RAM_G gde je JPEG dekodiran
-	EVE_BITMAP_LAYOUT(EVE_FORMAT_RGB565, 200 * 2, 200); // Format slike (pretpostavimo da je 200x200)
-	EVE_BITMAP_SIZE(EVE_FILTER_NEAREST, EVE_WRAP_BORDER, EVE_WRAP_BORDER, 200, 200);  // Postavljanje veličine
-
-	EVE_VERTEX2F(100 * 16, 50 * 16); // Pozicija slike na ekranu (x=100, y=50) u 1/16 piksela
-
-	EVE_END();                       // Završava crtanje
-	EVE_DISPLAY();                   // Prikaz display liste
-	EVE_CMD_SWAP();                  // Zamena frame buffer-a
-	EVE_LIB_EndCoProList();          // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty();       // Čekanje dok se komande izvrše
+	EVE_DISPLAY(); // Prikaz display liste
+	EVE_CMD_SWAP(); // Zamena frame buffer-a
+	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
+	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
 }
+
+
+
 
 #define JPEG_ADDRESS 0x100000  // Početna adresa u RAM_G memoriji
 
@@ -219,7 +212,34 @@ void loadJPEGToFT813(const uint8_t* jpegData, uint32_t size) {
 	EVE_LIB_WriteDataToRAMG( jpegData, size,JPEG_ADDRESS);  // Učitavanje JPEG podataka
 }
 
+void drawText() {
+	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
+	EVE_CMD_DLSTART(); // Početak display liste
+	EVE_CLEAR_COLOR_RGB(0, 0, 0); // Postavljanje crne pozadine
+	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
 
+	// Ispisivanje teksta
+	EVE_CMD_TEXT(50, 50, 20, 0, "Ormar 12345"); // (x, y, font, options, tekst)
+
+	EVE_DISPLAY(); // Prikaz display liste
+	EVE_CMD_SWAP(); // Zamena frame buffer-a
+	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
+	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
+}
+
+void addTextToExistingImage() {
+	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
+	EVE_CMD_DLSTART(); // Početak display liste
+	// **Ne koristimo EVE_CLEAR da ne bismo obrisali prethodne elemente**
+
+	// Dodaj tekst na postojeću sliku
+	EVE_CMD_TEXT(150, 100, 28, 0, "Ovo je tekst!"); // (x, y, font, options, tekst)
+
+	EVE_DISPLAY(); // Prikaz display liste
+	EVE_CMD_SWAP(); // Zamena frame buffer-a
+	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
+	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
+}
 
 void main(void)
 {
@@ -227,13 +247,37 @@ void main(void)
 	uint32_t bitmapSize = BITMAP_WIDTH * BITMAP_HEIGHT * 2; // Veličina bitmape (RGB565 format koristi 2 bajta po pikselu)
  	EVE_Init();
 	
-	//krug();
-	loadJPEGToFT813(&Rabac[0], sizeof(Rabac));  // Učitaj JPEG podatke (C array) u RAM_G
-	drawJPEG();  // Nacrtaj JPEG sliku na ekranu
+	char timeString[16];
+	uint16_t time=100;
+    
+	// Ovo je samo simulacija: Pretpostavljamo da funkcija getTimeString vraća trenutno vreme u formatu "HH:MM:SS"
+	while (1) {
+		strcpy(timeString,"13.09.2024 12:23:32"); // Ažuriraj vreme svake sekunde
+		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
+		sleep(1); // Pauza od 1 sekunde
+		
+		strcpy(timeString, "13.09.2024 12:23:33"); // Ažuriraj vreme svake sekunde
+		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
+		sleep(1); // Pauza od 1 sekunde
+		
+		strcpy(timeString, "13.09.2024 12:23:34"); // Ažuriraj vreme svake sekunde
+		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
+		sleep(1); // Pauza od 1 sekunde
+		
+		strcpy(timeString, "13.09.2024 12:23:35"); // Ažuriraj vreme svake sekunde
+		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
+		sleep(1); // Pauza od 1 sekunde
+		
+		
+	}
 	
-
-	loadBitmapToFT813(&Rabac[0], sizeof(Rabac)); // Učitaj bitmapu
-	drawBitmap(); // Nacrtaj bitmapu na ekranu
+	
+	
+	
+	drawText();
+	drawButton(); // Prikaz dugmeta na ekranu
+	addTextToExistingImage();	//drawText(); // Prikazivanje teksta na ekranu
+	
 	
 	int jure = 5;
 
