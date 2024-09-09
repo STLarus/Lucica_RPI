@@ -135,91 +135,41 @@ int mainxxx(void) {
 	return 0;
 }
 
-void krug(void)
-{
-	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
-	EVE_CMD_DLSTART(); // Početak display liste
-	EVE_CLEAR_COLOR_RGB(50, 100, 50); // Postavljanje crne pozadine
-	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
-
-	EVE_COLOR_RGB(255, 255, 255); // Postavljanje boje za crtanje (bela)
-	EVE_BEGIN(EVE_BEGIN_POINTS); // Počinje crtanje tačaka (koje se mogu koristiti kao krugovi)
-	EVE_POINT_SIZE(60 * 16); // Postavljanje veličine kruga (60 piksela, veličina se daje u 1/16 piksela)
-	EVE_VERTEX2F(240 * 16, 136 * 16); // Postavljanje koordinata kruga (240, 136) u 1/16 piksela
-	EVE_END(); // Završava crtanje tačaka
-
-	EVE_DISPLAY(); // Prikaz display liste
-	EVE_CMD_SWAP(); // Zamena frame buffer-a
-	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se sve komande ne izvrše
-	
-}
 
 
 
-// Funkcija za učitavanje bitmape u RAM_G memoriju
-void loadBitmapToFT813(const uint8_t* bitmapData, uint32_t size) {
-	//EVE_LIB_WriteDataToRAMG(BITMAP_ADDRESS, bitmapData, size); // Učitavanje bitmape
-	 EVE_LIB_WriteDataToRAMG(bitmapData, size,BITMAP_ADDRESS); // Učitavanje bitmape
-}
-void drawButton() {
-	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
-	EVE_CMD_DLSTART(); // Početak display liste
-	EVE_CLEAR_COLOR_RGB(100, 100,100); // Postavljanje crne pozadine
-	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
-
-	// Crtanje dugmeta
-	EVE_CMD_BUTTON(150, 100, 100, 40, 28, 110, "Broj 1!"); // (x, y, širina, visina, font, opcije, tekst)
-	EVE_CMD_BUTTON(150, 200, 100, 40, 28, 0, "Broj 2!"); // (x, y, širina, visina, font, opcije, tekst)
-
-
-	EVE_DISPLAY(); // Prikaz display liste
-	EVE_CMD_SWAP(); // Zamena frame buffer-a
-	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
-}
 
 void drawButtonsAndTime(const char* timeString) {
 	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
 	EVE_CMD_DLSTART(); // Početak nove display liste
-	EVE_CLEAR_COLOR_RGB(100, 100, 100); // Postavljanje pozadine
+	EVE_CLEAR_COLOR_RGB(0xB4, 0xCF, 0xEC); // Postavljanje pozadine
 	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
 
-	// Crtanje 6 dugmadi
-	EVE_CMD_BUTTON(50, 50, 100, 40, 28, 0, "Dugme 1");
-	EVE_CMD_BUTTON(50, 100, 100, 40, 28, 0, "Dugme 2");
-	EVE_CMD_BUTTON(50, 150, 100, 40, 28, 0, "Dugme 3");
-	EVE_CMD_BUTTON(200, 50, 100, 40, 28, 0, "Dugme 4");
-	EVE_CMD_BUTTON(200, 100, 100, 40, 28, 0, "Dugme 5");
-	EVE_CMD_BUTTON(200, 150, 100, 40, 28, 0, "Dugme 6");
+	// Prikaz sata i teksta
+	EVE_COLOR_RGB(0, 0, 0);        // CRNA boja za tekst
+	EVE_CMD_TEXT(400, 40, 30, EVE_OPT_CENTER, "ORMAR 3/21 SPINUT"); // Ormar
+	EVE_CMD_TEXT(400, 100, 31, EVE_OPT_CENTER, timeString); // Prikaz sata	
 
-	// Dodavanje vremena (sat) na ekran
-	EVE_CMD_TEXT(150, 250, 28, EVE_OPT_CENTER, timeString); // Prikaz sata
+	// Crtanje crvenih dugmadi
+	EVE_COLOR_RGB(0xFF, 0xFF, 0xFF);  
+	EVE_CMD_FGCOLOR(0xE42217);// Lava red
+	EVE_CMD_BUTTON(100, 150, 100, 80, 31, 0, "E1");
+	EVE_CMD_BUTTON(100, 320, 100, 80, 31, 0, "E2");
+	
+	EVE_CMD_BUTTON(350, 320, 100, 80, 31, 0, "E4");
 
-	EVE_DISPLAY(); // Prikaz display liste
-	EVE_CMD_SWAP(); // Zamena frame buffer-a
-	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
-}
+	// Crtanje plavih dugmadi
+	EVE_COLOR_RGB(0xFF, 0xFF, 0xFF);  // bijeli font
+	EVE_CMD_FGCOLOR(0x0002FF);	// blue
+	EVE_CMD_BUTTON(600, 150, 100, 80, 31, 0, "W1");
 
-
-
-
-#define JPEG_ADDRESS 0x100000  // Početna adresa u RAM_G memoriji
-
-// Funkcija za učitavanje JPEG slike u RAM_G memoriju
-void loadJPEGToFT813(const uint8_t* jpegData, uint32_t size) {
-	EVE_LIB_WriteDataToRAMG( jpegData, size,JPEG_ADDRESS);  // Učitavanje JPEG podataka
-}
-
-void drawText() {
-	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
-	EVE_CMD_DLSTART(); // Početak display liste
-	EVE_CLEAR_COLOR_RGB(0, 0, 0); // Postavljanje crne pozadine
-	EVE_CLEAR(1, 1, 1); // Čišćenje ekrana
-
-	// Ispisivanje teksta
-	EVE_CMD_TEXT(50, 50, 20, 0, "Ormar 12345"); // (x, y, font, options, tekst)
+	EVE_COLOR_RGB(0x00, 0x00, 0x00);
+	EVE_CMD_FGCOLOR(0xC0C0C0);// Silver
+	EVE_CMD_BUTTON(350, 150, 100, 80, 31, 0, "E3");
+	EVE_CMD_BUTTON(600, 320, 100, 80, 31, 0, "W2");
+	EVE_COLOR_RGB(0, 0, 0);        
+	EVE_CMD_TEXT(400, 250, 29, EVE_OPT_CENTER, "2.3 kWh"); //STRUJA
+	EVE_CMD_TEXT(650, 420, 29, EVE_OPT_CENTER, "0.3 m3"); // VODA	
 
 	EVE_DISPLAY(); // Prikaz display liste
 	EVE_CMD_SWAP(); // Zamena frame buffer-a
@@ -227,19 +177,7 @@ void drawText() {
 	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
 }
 
-void addTextToExistingImage() {
-	EVE_LIB_BeginCoProList(); // Početak CoPro liste komandi
-	EVE_CMD_DLSTART(); // Početak display liste
-	// **Ne koristimo EVE_CLEAR da ne bismo obrisali prethodne elemente**
 
-	// Dodaj tekst na postojeću sliku
-	EVE_CMD_TEXT(150, 100, 28, 0, "Ovo je tekst!"); // (x, y, font, options, tekst)
-
-	EVE_DISPLAY(); // Prikaz display liste
-	EVE_CMD_SWAP(); // Zamena frame buffer-a
-	EVE_LIB_EndCoProList(); // Kraj CoPro liste komandi
-	EVE_LIB_AwaitCoProEmpty(); // Čekanje dok se komande izvrše
-}
 
 void main(void)
 {
@@ -249,22 +187,22 @@ void main(void)
 	
 	char timeString[16];
 	uint16_t time=100;
-    
+	//drawColoredButton();
 	// Ovo je samo simulacija: Pretpostavljamo da funkcija getTimeString vraća trenutno vreme u formatu "HH:MM:SS"
 	while (1) {
-		strcpy(timeString,"13.09.2024 12:23:32"); // Ažuriraj vreme svake sekunde
+		strcpy(timeString,"12:23:32"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
 		
-		strcpy(timeString, "13.09.2024 12:23:33"); // Ažuriraj vreme svake sekunde
+		strcpy(timeString, "12:23:33"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
 		
-		strcpy(timeString, "13.09.2024 12:23:34"); // Ažuriraj vreme svake sekunde
+		strcpy(timeString, "12:23:34"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
 		
-		strcpy(timeString, "13.09.2024 12:23:35"); // Ažuriraj vreme svake sekunde
+		strcpy(timeString, "12:23:35"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
 		
