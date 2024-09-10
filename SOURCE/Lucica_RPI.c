@@ -5,6 +5,7 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include "../PICTURE/Rabac.h"
+#include "../INCLUDE/FT8xx.h"
 
 #define BOT_TOKEN   "jure"
 #define CHAT_ID 12345678
@@ -179,6 +180,8 @@ void drawButtonsAndTime(const char* timeString) {
 
 
 
+
+
 void main(void)
 {
 //const uint8_t* bitmapData; // Ovdje bi bila tvoja bitmapa u formatu niza podataka
@@ -187,6 +190,11 @@ void main(void)
 	
 	char timeString[16];
 	uint16_t time=100;
+
+	while (1) {
+		checkTouch();  // Provera dodira u glavnoj petlji
+		delay(100);    // Delay za izbegavanje prečestih čitanja
+	}
 	//drawColoredButton();
 	// Ovo je samo simulacija: Pretpostavljamo da funkcija getTimeString vraća trenutno vreme u formatu "HH:MM:SS"
 	while (1) {

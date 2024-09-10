@@ -1,4 +1,4 @@
-/**
+﻿/**
  @file EVE_HAL.c
  */
 
@@ -23,7 +23,24 @@
 
 // Used to navigate command ring buffer
 static uint16_t writeCmdPointer = 0x0000;
+uint16_t x;
+uint16_t y;
 
+void checkTouch(void) {
+	uint32_t touchXY = HAL_MemRead32(EVE_REG_TOUCH_SCREEN_XY); // Čitanje X i Y koordinata dodira
+
+	// Provera da li je ekran pritisnut
+	if (touchXY != 0x80008000) {
+		x = touchXY >> 16; // X koordinata dodira
+		y = touchXY & 0xFFFF; // Y koordinata dodira
+
+		printf("Ekran je pritisnut na poziciji: X=%d, Y=%d\n", x, y);
+	}
+	else {
+		x = 0;
+		y = 0;// printf("Nema dodira na ekranu.\n");
+	}
+}
 
 void HAL_EVE_Init(void)
 {
