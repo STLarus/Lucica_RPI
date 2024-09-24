@@ -191,10 +191,10 @@ void main(void)
 	char timeString[16];
 	uint16_t time=100;
 
-	while (1) {
+	/*while (1) {
 		checkTouch();  // Provera dodira u glavnoj petlji
 		delay(100);    // Delay za izbegavanje prečestih čitanja
-	}
+	}*/
 	//drawColoredButton();
 	// Ovo je samo simulacija: Pretpostavljamo da funkcija getTimeString vraća trenutno vreme u formatu "HH:MM:SS"
 	while (1) {
