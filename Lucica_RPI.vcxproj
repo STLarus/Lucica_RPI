@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
-    <ToolchainVersion>12.2.0/13.1/r1</ToolchainVersion>
+    <ToolchainVersion>10.2.1/10.1/r2</ToolchainVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
@@ -45,7 +45,7 @@
     <Link>
       <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
       <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
-      <AdditionalLibraryNames>wiringPI;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <AdditionalLibraryNames>wiringPI;lpthread;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
       <LinkerScript />
       <AdditionalOptions />
     </Link>
@@ -59,8 +59,10 @@
     <ClCompile Include="SOURCE\EVE_API.c" />
     <ClCompile Include="SOURCE\EVE_HAL.c" />
     <ClCompile Include="SOURCE\EVE_MCU_RPI.c" />
+    <ClCompile Include="SOURCE\Inputs.c" />
     <ClCompile Include="SOURCE\Lucica_RPI.c" />
     <ClCompile Include="SOURCE\mongoose.c" />
+    <ClCompile Include="SOURCE\Wiegand.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
