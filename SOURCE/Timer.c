@@ -2,12 +2,20 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <stdint.h>
+
+uint32_t Timex=0;
+struct timer
+{
+	uint32_t start;
+	uint32_t interval;
+};
+
 
 // Handler za tajmer interrupt
 void timerHandler(int signum) {
-	static int count = 0;
-	printf("Tajmer interrupt broj: %d\n", ++count);
-}
+	Timex=Timex+10;
+	}
 
 
 void init_timer(void)
@@ -28,41 +36,29 @@ void init_timer(void)
 
 	// Postavi tajmer
 	setitimer(ITIMER_REAL, &timer, NULL);
-	
+}
 
 
-unsigned int Timex;
-uint32_t LocalTime,sysTyck;
-struct timer
-	{
-	unsigned int start;
-	unsigned int interval;
-	};
+
+
 
 //------------------------------------------------------------------------
-int timer_expired(struct timer *t)
+int timer_expired(struct timer* t)
 {
-return (int)(Timex - t->start) >= (int)t->interval;
+	return (int)(Timex - t->start) >= (int)t->interval;
 } /**** timer_expired() ****/
 
 
 
 //------------------------------------------------------------------------
-void timer_set(struct timer *t, unsigned int interval)
+void timer_set(struct timer* t, unsigned int interval)
 {
-t->interval = interval;
-t->start = Timex;
+	t->interval = interval;
+	t->start = Timex;
 }/**** timer_set() ***/
 
 void IncrementTimer(void)
 {
-Timex++;
-LocalTime=LocalTime+10;
-sysTyck++;
-}
-
-uint32_t sys_now(void)
-{
- return sysTyck;
+	Timex++;
 }
 

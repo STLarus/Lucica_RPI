@@ -191,6 +191,7 @@ void main(void)
 	char timeString[16];
 	uint16_t time=100;
 	wiegand_setup();
+	//init_timer();
 
 	/*while (1) {
 		checkTouch();  // Provera dodira u glavnoj petlji

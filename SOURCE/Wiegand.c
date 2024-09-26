@@ -5,32 +5,46 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
+
+//https://github.com/mhs/wiegand-pi/blob/master/wiegand.c
 
 #define D0_PIN 23  // WiringPi D0
 #define D1_PIN 22  // WiringPI D1
-#define TIMEOUT_MS 100 // Timeout u milisekundama
+#define TIMEOUT 10*1000*1000	//10 ms  zadaje se u ns
 
 volatile int bitCount = 0;
-volatile unsigned long data = 0;
-volatile bool timeout = false;
-uint8_t rdrBuf[64],rdrCount;
+uint8_t rdrBuf[64], rdrCount;
 uint32_t CardCode;
 
-// Funkcija za upravljanje timeout-om
-void* timeoutHandler(void* arg) {
-    usleep(TIMEOUT_MS * 1000); // Pretvori u mikrosekunde
-    timeout = true;
-    return NULL;
-}
+static struct timespec lastPulseTime, now, delta;
 
 void d0Interrupt(void) {
 	rdrBuf[bitCount++] = 0;
-    timeout = false;  // Resetuj timeout
+	clock_gettime(CLOCK_MONOTONIC, &lastPulseTime);
 }
 
 void d1Interrupt(void) {
-	rdrBuf[bitCount++] = 1; 
-	timeout = false;  // Resetuj timeout
+	rdrBuf[bitCount++] = 1;
+	clock_gettime(CLOCK_MONOTONIC, &lastPulseTime);
+}
+
+/************************************************************************
+Function:       endWiegand
+Purpose:        Provjerava da li je došao zadnji wiegand impuls
+Parameters:     None
+Returns:        1...isteklo vrijeme, poruka je gotova
+				0...nije isteklo vrijeme
+************************************************************************/
+int endWiegand() {
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	delta.tv_nsec = now.tv_nsec - lastPulseTime.tv_nsec;
+	if ((delta.tv_nsec > TIMEOUT) && bitCount) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 
@@ -41,7 +55,7 @@ Parameters:     Pointer na bafer u kojem su smjesteni podaci
 Returns:        1...ako je paritet ispravan
 		0...ako je paritet neispravan
 ************************************************************************/
-unsigned char TestParitet26(unsigned char *pBuf)
+unsigned char TestParitet26(unsigned char* pBuf)
 {
 	unsigned char Lpar, Rpar, cnt;
 	Lpar = 0;
@@ -69,7 +83,7 @@ Return val:     kod procitane kartice
 Desc:			Funkcija pretvara pristigli array u kod kartice. Ne provjerava
 				cheksum
 *********************************************************************************/
-unsigned long Wiegand26(unsigned char *tbuf)
+unsigned long Wiegand26(unsigned char* tbuf)
 {
 	unsigned char cnt;
 	unsigned long cCode;
@@ -95,7 +109,7 @@ Return val:     kod procitane kartice
 Desc:			Funkcija pretvara pristigli array u kod kartice. Ne provjerava
 				cheksum
 *********************************************************************************/
-unsigned long Wiegand32(unsigned char *tbuf)
+unsigned long Wiegand32(unsigned char* tbuf)
 {
 	unsigned char cnt;
 	unsigned long cCode;
@@ -118,7 +132,7 @@ Return val:     kod procitane kartice
 Desc:			Funkcija pretvara pristigli array u kod kartice. Ne provjerava
 				cheksum
 *********************************************************************************/
-unsigned long Wiegand34(unsigned char *tbuf)
+unsigned long Wiegand34(unsigned char* tbuf)
 {
 	unsigned char cnt;
 	unsigned long cCode;
@@ -142,7 +156,7 @@ Return val:     kod procitane kartice
 Desc:			Funkcija pretvara pristigli array u kod kartice. Ne provjerava
 				cheksum
 *********************************************************************************/
-unsigned long Wiegand37(unsigned char *tbuf)
+unsigned long Wiegand37(unsigned char* tbuf)
 {
 	unsigned char cnt;
 	unsigned long cCode;
@@ -165,7 +179,7 @@ Return val:     kod procitane kartice
 Desc:			Funkcija pretvara pristigli array u kod kartice. Ne provjerava
 				cheksum
 *********************************************************************************/
-unsigned long Wiegand35(unsigned char *tbuf)
+unsigned long Wiegand35(unsigned char* tbuf)
 {
 	unsigned char cnt;
 	unsigned long cCode;
@@ -181,47 +195,49 @@ unsigned long Wiegand35(unsigned char *tbuf)
 	return cCode;
 }/****** Wiegand35() *****/
 
+
+/********************************************************************************
+Funkcija:		wiegand_setup
+Parameteri:     None
+Return val:     None
+Desc:			Podešava interrupte za wiegand protokol
+*********************************************************************************/
+
 void wiegand_setup() {
-    //wiringPiSetup();  // inicijalizuj wiringPi
+	
+	pinMode(D0_PIN, INPUT);  // postavi D0 kao ulaz
+	pinMode(D1_PIN, INPUT);  // postavi D1 kao ulaz
 
-    pinMode(D0_PIN, INPUT);  // postavi D0 kao ulaz
-    pinMode(D1_PIN, INPUT);  // postavi D1 kao ulaz
-
-    // Postavi prekidače
-    wiringPiISR(D0_PIN, INT_EDGE_FALLING, &d0Interrupt);
-    wiringPiISR(D1_PIN, INT_EDGE_FALLING, &d1Interrupt);
+	// Postavi prekidače
+	wiringPiISR(D0_PIN, INT_EDGE_FALLING, &d0Interrupt);
+	wiringPiISR(D1_PIN, INT_EDGE_FALLING, &d1Interrupt);
+	CardCode = 0;
+	bitCount = 0;
 }
 
-void wiegand() {
-    while (1) {
-        if (timeout) {
-            // Ako je timeout istekao, obradi primljene podatke
-            if (bitCount > 0) {
-	            if (bitCount == 34)
-		            CardCode = Wiegand34(&rdrBuf[0]);
-	            else if (bitCount == 32)
-		            CardCode = Wiegand32(&rdrBuf[0]);
-	            else if (bitCount == 26)
-		            CardCode = Wiegand26(&rdrBuf[0]);
-	            else if (bitCount == 37)
-		            CardCode = Wiegand37(&rdrBuf[0]);
-	            else if (bitCount == 35)
-		            CardCode = Wiegand35(&rdrBuf[0]);
-	            else
-		            CardCode = 0;
-                printf("Primljen Wiegand signal: %lu, broj bitova: %d\n", CardCode, bitCount);
-                // Resetuj podatke
-                data = 0;
-                bitCount = 0;
-            }
-        }
-        else {
-            // Pokreni novi tajmer svaki put kada se detektuje impuls
-            pthread_t timerThread;
-            timeout = false; // Postavi timeout na false
-            pthread_create(&timerThread, NULL, timeoutHandler, NULL);
-            pthread_detach(timerThread); // Odvojimo thread
-            usleep(1000); // Kratka pauza da ne saturiramo CPU
-        }
-    }
+/********************************************************************************
+Funkcija:		wiegand
+Parameteri:     None
+Return val:     None
+Desc:			Provjerava da li je očitana kartica. Ako je očitana smješta je u 
+				varijablu CardCode
+*********************************************************************************/
+void wiegand(void) {
+	if (endWiegand()) {// Ako je timeout istekao, obradi primljene podatke
+		if (bitCount == 34)
+			CardCode = Wiegand34(&rdrBuf[0]);
+		else if (bitCount == 32)
+			CardCode = Wiegand32(&rdrBuf[0]);
+		else if (bitCount == 26)
+			CardCode = Wiegand26(&rdrBuf[0]);
+		else if (bitCount == 37)
+			CardCode = Wiegand37(&rdrBuf[0]);
+		else if (bitCount == 35)
+			CardCode = Wiegand35(&rdrBuf[0]);
+		else
+			CardCode = 0;
+		//printf("Primljen Wiegand signal: %lu, broj bitova: %d\n", CardCode, bitCount);
+		bitCount = 0;
+	}
+
 }
