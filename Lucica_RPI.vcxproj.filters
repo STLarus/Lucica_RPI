@@ -47,6 +47,9 @@
     <ClCompile Include="SOURCE\Inputs.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="SOURCE\Timer.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INCLUDE\EVE.h">
