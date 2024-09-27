@@ -190,7 +190,7 @@ void main(void)
 	
 	char timeString[16];
 	uint16_t time=100;
-	wiegand_setup();
+	//wiegand_setup();
 	//init_timer();
 
 	/*while (1) {
@@ -200,8 +200,8 @@ void main(void)
 	//drawColoredButton();
 	// Ovo je samo simulacija: Pretpostavljamo da funkcija getTimeString vraća trenutno vreme u formatu "HH:MM:SS"
 	while (1) {
-		wiegand();
-	/*	strcpy(timeString,"12:23:32"); // Ažuriraj vreme svake sekunde
+		//wiegand();
+		strcpy(timeString,"12:23:32"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
 		
@@ -216,7 +216,7 @@ void main(void)
 		strcpy(timeString, "12:23:35"); // Ažuriraj vreme svake sekunde
 		drawButtonsAndTime(timeString); // Ponovo iscrtaj dugmad i novo vreme
 		sleep(1); // Pauza od 1 sekunde
-	*/	
+		
 		
 	}
 	
