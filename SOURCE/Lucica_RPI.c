@@ -192,7 +192,7 @@ void main(void)
 	uint16_t time=100;
 	//wiegand_setup();
 	//init_timer();
-
+	input_setup();
 	/*while (1) {
 		checkTouch();  // Provera dodira u glavnoj petlji
 		delay(100);    // Delay za izbegavanje prečestih čitanja
