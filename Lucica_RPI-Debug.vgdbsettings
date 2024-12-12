@@ -47,9 +47,9 @@
     <ToolchainID>
       <ID>com.visualgdb.raspberry_pi</ID>
       <Version>
-        <GCC>12.2.0</GCC>
-        <GDB>13.1</GDB>
-        <Revision>1</Revision>
+        <GCC>10.2.1</GCC>
+        <GDB>10.1</GDB>
+        <Revision>2</Revision>
       </Version>
     </ToolchainID>
     <ProjectFile>Lucica_RPI.vcxproj</ProjectFile>

@@ -26,9 +26,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SOURCE\Lucica_RPI.c">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="SOURCE\EVE_API.c">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -48,6 +45,9 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="SOURCE\Timer.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="SOURCE\LORA_main.c">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
