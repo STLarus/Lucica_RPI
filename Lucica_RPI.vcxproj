@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
-    <ToolchainVersion>12.2.0/13.1/r1</ToolchainVersion>
+    <ToolchainVersion>12.2.0/13.1/r2</ToolchainVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ToolchainID>com.visualgdb.raspberry_pi</ToolchainID>
@@ -37,7 +37,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
       <CLanguageStandard>GNU99</CLanguageStandard>
-      <AdditionalIncludeDirectories>=/usr/include;=/home/s/WiringPi/wiringPi;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>=/usr/include;=/home/s/WiringPi/wiringPi;=/usr/local/include;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions />
       <CPPLanguageStandard />
@@ -60,7 +60,7 @@
     <ClCompile Include="SOURCE\EVE_HAL.c" />
     <ClCompile Include="SOURCE\EVE_MCU_RPI.c" />
     <ClCompile Include="SOURCE\Inputs.c" />
-    <ClCompile Include="SOURCE\Lucica_RPI.c" />
+    <ClCompile Include="SOURCE\LORA_main.c" />
     <ClCompile Include="SOURCE\mongoose.c" />
     <ClCompile Include="SOURCE\Timer.c" />
     <ClCompile Include="SOURCE\Wiegand.c" />
