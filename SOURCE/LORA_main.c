@@ -12,6 +12,7 @@
 #define CS_PIN 16 // GPIO16 (pin 36), ručno kontroliran CS
 #define RST_PIN	17
 
+#define TIMEOUT_MS 5000  // Maksimalno čekanje u milisekundama
 
 
 void rfm95_write_register(uint8_t reg, uint8_t value) {
@@ -88,6 +89,31 @@ void rfm95_init(void) {
 }
 
 
+#define TIMEOUT_MS 5000  // Maksimalno čekanje u milisekundama
+
+void rfm95_send(const uint8_t *data, uint8_t length) {
+	rfm95_write_register(0x01, 0x81); // Standby mode
+	rfm95_write_register(0x22, length); // Payload length
+
+	for (uint8_t i = 0; i < length; i++) {
+		rfm95_write_register(0x00, data[i]); // FIFO
+	}
+
+	rfm95_write_register(0x01, 0x83); // TX mode
+
+	// Timeout loop
+	//struct timespec start, current;
+	//clock_gettime(CLOCK_MONOTONIC, &start);
+
+	while ((rfm95_read_register(0x12) & 0x08) == 0) {
+		delay(1); // Wait for TxDone
+
+	}
+
+	rfm95_write_register(0x12, 0x08); // Clear TxDone
+	//printf("Message sent\\n");
+}
+
 
 int main(void)
 {
@@ -120,6 +146,8 @@ int main(void)
 
 
 	while (1) {
+		const uint8_t message[] = "Hello, LoRa!";
+		rfm95_send(message, strlen((const char *)message));
 
 		sleep(1); // Pauza od 1 sekunde
 		
